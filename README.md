@@ -8,6 +8,8 @@
 [![GitHub stars](https://img.shields.io/github/stars/gregstein/DE-Replays-Manager.svg)](https://github.com/gregstein/DE-Replays-Manager/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/gregstein/DE-Replays-Manager.svg)](https://github.com/gregstein/DE-Replays-Manager/network)
 
+<img src="https://i.imgur.com/XAZqQQo.png" width="20%" >
+
 DE Replays Manager is a replay management utility for Age of empires 2 Definitive Edition. DE.R.M makes watching recorded games much easier and fun. 
 
 You can drag and drop replays from ageofempires.com directly to your replays folder and rename them on the fly. DE.R.M comes with Replays browser where you can rename, delete or export your favorite replays directly from your savegame folder. And another section where you can search players and pull their ageofempires.com stats profile to download their recorded games.
