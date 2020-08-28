@@ -64,7 +64,7 @@ Coming up soon..
 <img src="https://i.imgur.com/ANsp0Bk.jpg" width="622">
 
 ## Donations
-**You** want to show Your Love to This Project? 
+**You** want to show Your Love❤️ to This Project? 
 [![💞Support](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://streamlabs.com/gregstein_)
 
 Donators can request any features in the scoop of the project and will be added to the Hall of Fame of DE Replays Manager.
