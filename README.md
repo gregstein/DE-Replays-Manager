@@ -1,4 +1,4 @@
-# DE-Replays-Manager
+# DE Replays Manager
 
 [![Github All Releases](https://img.shields.io/github/downloads/gregstein/DE-Replays-Manager/total.svg)](https://github.com/gregstein/DE-Replays-Manager/releases)
 [![GitHub release](https://img.shields.io/github/release/gregstein/DE-Replays-Manager/all.svg)](https://github.com/gregstein/AoE2Tools/releases)
