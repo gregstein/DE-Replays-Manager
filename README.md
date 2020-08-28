@@ -51,15 +51,15 @@ Coming up soon..
 
 ## Screenshots
 
-**Drag & Drop Replays
+**Drag & Drop Replays**
 
 <img src="https://i.imgur.com/OiLhjfO.jpg" width="622">
 
-**Browse Your Replays
+**Browse Your Replays**
 
 <img src="https://i.imgur.com/Loe2kx4.jpg" width="622">
 
-**Live Player Search
+**Live Player Search**
 
 <img src="https://i.imgur.com/ANsp0Bk.jpg" width="622">
 
