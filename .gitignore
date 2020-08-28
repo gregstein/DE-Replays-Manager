@@ -1,1 +1,4 @@
 bin/
+obj/
+Updater/Updater/bin/*
+Updater/Updater/obj/*
