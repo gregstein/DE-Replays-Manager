@@ -29,10 +29,45 @@ namespace DEReplaysManager
         }
         public List<string> DIRprofiles = new List<string>();
         Dictionary<string, string> USERprofiles = new Dictionary<string, string>();
-        public string dePATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Games\Age of Empires 2 DE";
+        //public string dePATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Games\Age of Empires 2 DE";
         private string filterText = String.Empty;
         public string SaveGame;
         public string RepZip = System.IO.Path.GetTempPath() + @"\AgeIIDE_Replay.zip";
+        public static List<int> refver = new List<int>{
+                                                        40220,
+                                                        39515,
+                                                        39284,
+                                                        37906,
+                                                        37650,
+                                                        36906,
+                                                        35584,
+                                                        35209,
+                                                        34699,
+                                                        34397,
+                                                        34055,
+                                                        33315,
+                                                        33164,
+                                                        33059,
+                                                        32911
+                                                       };
+        public static List<string> refvst = new List<string>{
+
+                                                        "25 August 2020 (40220)",
+                                                        "28 July 2020 (39515)",
+                                                        "21 July 2020 (39284)",
+                                                        "3 June 2020 (37906)",
+                                                        "28 May 2020 (37650)",
+                                                        "30 April 2020 (36906)",
+                                                        "27 February 2020 (35584)",
+                                                        "13 February 2020 (35209)",
+                                                        "21 January 2020 (34699)",
+                                                        "13 January 2020 (34397)",
+                                                        "17 December 2019 (34055)",
+                                                        "27 November 2019 (33315)",
+                                                        "22 November 2019 (33164)",
+                                                        "20 November 2019 (33059)",
+                                                        "16 November 2019 (32911)"
+                                                        };
         private void RefreshSaves(string mydir)
         {
             SaveGame = mydir + "\\savegame";
@@ -157,13 +192,14 @@ namespace DEReplaysManager
         }
         private void ScanDirectories()
         {
-            string[] subdirectoryEntries = Directory.GetDirectories(dePATH);
+            DEparser dp = new DEparser();
+            string[] subdirectoryEntries = Directory.GetDirectories(dp.dePATH);
 
 
             foreach (string subdirectory in subdirectoryEntries)
             {
 
-                if (IsDigitsOnly(subdirectory.Replace(dePATH + "\\", "")) && subdirectory.Length > 4 && subdirectory.Replace(dePATH + "\\", "") != "0")
+                if (dp.IsDigitsOnly(subdirectory.Replace(dp.dePATH + "\\", "")) && subdirectory.Length > 4 && subdirectory.Replace(dp.dePATH + "\\", "") != "0")
                 {
                     DIRprofiles.Add(subdirectory);
                     FileInfo fl = new FileInfo(subdirectory + @"\profile\Player.nfp");
@@ -173,11 +209,11 @@ namespace DEReplaysManager
             }
 
 
-            var lastDirectory = new DirectoryInfo(dePATH).GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTimeUtc);
+            var lastDirectory = new DirectoryInfo(dp.dePATH).GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTimeUtc);
             foreach (DirectoryInfo fdir in lastDirectory)
             {
                 //MessageBox.Show(fdir);
-                if (IsDigitsOnly(fdir.FullName.Replace(dePATH + "\\", "")) && fdir.FullName.Length > 4 && fdir.FullName.Replace(dePATH + "\\", "") != "0")
+                if (dp.IsDigitsOnly(fdir.FullName.Replace(dp.dePATH + "\\", "")) && fdir.FullName.Length > 4 && fdir.FullName.Replace(dp.dePATH + "\\", "") != "0")
                 {
 
                     //MessageBox.Show(fdir.FullName);
@@ -237,6 +273,7 @@ namespace DEReplaysManager
             DateTime p12 = new DateTime(2020, 6, 3);
             DateTime p13 = new DateTime(2020, 7, 21);
             DateTime p14 = new DateTime(2020, 7, 28);
+            DateTime p15 = new DateTime(2020, 8, 25);
             if (fDate >= p1 && fDate < p2)
                 return @"16 November 2019 (32911)";
             else if (fDate >= p2 && fDate < p3)
@@ -263,20 +300,13 @@ namespace DEReplaysManager
                 return @"03 June 2020 (37906)";
             else if (fDate >= p13 && fDate < p14)
                 return @"21 July 2020 (39284)";
-            else if (fDate >= p14)
+            else if (fDate >= p14 && fDate < p15)
                 return @"28 July 2020 (39515)";
+            else if (fDate >= p15)
+                return @"25 August 2020 (40220)";
             return null;
         }
-        private bool IsDigitsOnly(string str)
-        {
-            foreach (char c in str)
-            {
-                if (c < '0' || c > '9')
-                    return false;
-            }
-
-            return true;
-        }
+        
 
 
     
@@ -318,6 +348,7 @@ namespace DEReplaysManager
         private void Form1_Load(object sender, EventArgs e)
         {
             ScanDirectories();
+
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -527,6 +558,7 @@ namespace DEReplaysManager
                 }
                 dateREC.Text = GetDate(SaveGame + @"\" + repLIST.SelectedItem.ToString());
                 patchREC.Text = FetchPatch(GetDate(SaveGame + @"\" + repLIST.SelectedItem.ToString()));
+                
             }
         }
 
@@ -785,7 +817,7 @@ namespace DEReplaysManager
                         DialogResult dialogResult = MessageBox.Show("Update Now?", "New Update: DERM V " + uptag, MessageBoxButtons.YesNo);
                         if (dialogResult == DialogResult.Yes)
                         {
-                            Process.Start(AppDomain.CurrentDomain.BaseDirectory + "DERMUpdater.exe");
+                            Process.Start(AppDomain.CurrentDomain.BaseDirectory + "Updater.exe");
                         }
                         else if (dialogResult == DialogResult.No)
                         {
@@ -805,6 +837,76 @@ namespace DEReplaysManager
                 KryptonMessageBox.Show("Error while checking for Updates! Please try later.", "Network Error");
             }
 
+        }
+
+
+        private void downgtoolbtn_Click(object sender, EventArgs e)
+        {
+            De_Roll.Form1 dgt = new De_Roll.Form1();
+            dgt.Show();
+        }
+
+        private void patchREC_Paint(object sender, PaintEventArgs e)
+        {
+            
+        }
+        public int PatchVersionSensor(string myrec)
+        {
+            //progressBar2.Maximum = refver.Count;
+            //int idc = 0;
+            foreach (int id in refver)
+            {
+                //progressBar2.Value = idc++;
+                Stream f = File.OpenRead(SaveGame + "\\" + myrec);
+                BinaryReader br = new BinaryReader(f);
+
+                for (int i = 0; i < f.Length - 10; i++)
+                {
+                    f.Seek(i, SeekOrigin.Begin);
+                    if (br.ReadUInt16() == id)
+                    {
+                        foreach(string sd in refvst)
+                        {
+                            if(sd.Contains(id.ToString()))
+                                patchREC.Text = sd;
+                            return id;
+                        }
+                        
+                        
+                        //Console.WriteLine("Found @ {0}", i);
+                    }
+                }
+                br.Close();
+            }
+
+
+            return 0;
+        }
+        private void patchREC_Click(object sender, EventArgs e)
+        {
+            //if (patchREC.Text != "Check Version")
+            //{
+
+            //    DialogResult dialogResult = DevComponents.DotNetBar.MessageBoxEx.Show("Would You like To Downgrade AoE2 DE To Patch: " + patchREC.Text + " ?", "Downgrade Tool prompt", MessageBoxButtons.YesNo);
+            //    if (dialogResult == DialogResult.Yes)
+            //    {
+            //        //prompt downgrate tool with patch parameter
+            //        De_Roll.Form1 dgt = new De_Roll.Form1();
+            //        dgt.SetPatchVer = patchREC.Text;
+            //        dgt.Show();
+
+            //    }
+            //    else if (dialogResult == DialogResult.No)
+            //    {
+
+            //    }
+
+            //}
+            //else
+            //{
+            //    PatchVersionSensor(repLIST.SelectedItem.ToString());
+            //}
+            
         }
     }
 }

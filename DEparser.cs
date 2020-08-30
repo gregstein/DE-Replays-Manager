@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -12,12 +13,14 @@ using System.Windows.Forms;
 
 namespace De_Roll
 {
+    
     class DEparser
     {
         public string recTEXT;
         public string playerTEXT;
         public List<string> playerDB = new List<string>();
         public List<string> chatDB = new List<string>();
+        public string dePATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Games\Age of Empires 2 DE";
         public string GetStrings(string myrec)
         {
             if (File.Exists(System.AppDomain.CurrentDomain.BaseDirectory + "strings.exe"))
@@ -44,6 +47,17 @@ namespace De_Roll
                 return null;
             }
 
+        }
+
+        public bool IsDigitsOnly(string str)
+        {
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
         }
         public string GetPlayernfp(string myrec)
         {
@@ -72,6 +86,12 @@ namespace De_Roll
             }
 
         }
+        public string GrabID(string verstring)
+        {
+            return verstring.Split('(', ')')[2];
+            
+        }
+        
         public string RetName(string newline)
         {
             // Part 1: the input string.
