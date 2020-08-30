@@ -219,7 +219,7 @@ namespace Updater
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll.old"))
                     File.Delete(AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll.old");
 
-                File.Move(AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll", AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll.old");
+                //File.Move(AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll", AppDomain.CurrentDomain.BaseDirectory + "Newtonsoft.Json.dll.old");
 
                 progressBar.BeginInvoke((Action)(() =>
                 {
@@ -243,7 +243,7 @@ namespace Updater
                             }
                             catch (SystemException)
                             {
-
+                                
                             }
 
                         }));
@@ -437,6 +437,11 @@ namespace Updater
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint_1(object sender, PaintEventArgs e)
         {
 
         }

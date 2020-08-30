@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +18,8 @@ using System.Net;
 using System.Threading.Tasks;
 using DEBoard;
 using System.Reflection;
+using ICSharpCode.SharpZipLib.Zip.Compression;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace DEReplaysManager
 {
@@ -27,6 +29,7 @@ namespace DEReplaysManager
         {
             InitializeComponent();
         }
+
         public List<string> DIRprofiles = new List<string>();
         Dictionary<string, string> USERprofiles = new Dictionary<string, string>();
         //public string dePATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Games\Age of Empires 2 DE";
@@ -120,24 +123,53 @@ namespace DEReplaysManager
 
             return asciiString;
         }
-         
-        public void Decompress(FileInfo fileToDecompress)
+         public void Decompress2(string hkiprofile)
+        {
+            DEparser stp = new DEparser();
+            string newFileName = hkiprofile.Replace(".hki", ".db");
+
+
+            //File.WriteAllBytes("test.txt", Deziphki);
+            
+            stp.GetPlayernfp(newFileName);
+            //MessageBox.Show(stp.playerTEXT);
+
+
+
+
+
+            if (!USERprofiles.ContainsKey(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", "")))
+            {
+                USERprofiles.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", ""), hkiprofile.Replace(@"\profile\Player.nfp", ""));
+                listPROFILE.Items.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", ""));
+            }
+            else
+            {
+                USERprofiles.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", "") + @"(2)", hkiprofile.Replace(@"\profile\Player.nfp", ""));
+                listPROFILE.Items.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", "") + @"(2)");
+            }
+
+        }
+        
+        public void Decompress3(FileInfo fileToDecompress)
         {
             using (FileStream originalFileStream = fileToDecompress.OpenRead())
             {
                 string currentFileName = fileToDecompress.FullName;
-                string newFileName = currentFileName.Remove(currentFileName.Length - fileToDecompress.Extension.Length) + @".db";
+                string newFileName = currentFileName.Replace(@".nfp", ".db");
 
                 using (DeflateStream decompressionStream = new DeflateStream(originalFileStream, CompressionMode.Decompress))
                 {
                     using (StreamReader reader = new StreamReader(decompressionStream))
                     {
                         string player = reader.ReadToEnd();
-                        
-                        File.WriteAllText(newFileName, player);
+              
+                        //File.WriteAllBytes(newFileName, bytes);
                         DEparser stp = new DEparser();
-                        stp.GetPlayernfp(newFileName);
-                        
+                        //stp.GetPlayernfp(newFileName);
+                        System.Windows.Forms.Clipboard.SetText(newFileName);
+                        MessageBox.Show(newFileName);
+
 
 
 
@@ -193,17 +225,68 @@ namespace DEReplaysManager
         private void ScanDirectories()
         {
             DEparser dp = new DEparser();
-            string[] subdirectoryEntries = Directory.GetDirectories(dp.dePATH);
+            //string[] subdirectoryEntries = Directory.GetDirectories(dp.dePATH);
+            var subdirectoryEntries = new DirectoryInfo(dp.dePATH).GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTimeUtc);
+            bool isONCE = false;
 
-
-            foreach (string subdirectory in subdirectoryEntries)
+            foreach (DirectoryInfo subdirectory in subdirectoryEntries)
             {
-
-                if (dp.IsDigitsOnly(subdirectory.Replace(dp.dePATH + "\\", "")) && subdirectory.Length > 4 && subdirectory.Replace(dp.dePATH + "\\", "") != "0")
+                
+                if (dp.IsDigitsOnly(subdirectory.FullName.Replace(dp.dePATH + "\\", "")) && subdirectory.FullName.Length > 4 && subdirectory.FullName.Replace(dp.dePATH + "\\", "") != "0")
                 {
-                    DIRprofiles.Add(subdirectory);
-                    FileInfo fl = new FileInfo(subdirectory + @"\profile\Player.nfp");
-                    Decompress(fl);
+                    DIRprofiles.Add(subdirectory.FullName);
+                    DirectoryInfo info = new DirectoryInfo(subdirectory.FullName + "\\profile");
+                    FileInfo[] files = info.GetFiles("*.hki").OrderBy(p => p.CreationTime).ToArray();
+                    foreach (FileInfo file in files)
+                    {
+                       if(listPROFILE.Items.Contains(file.Name.Replace(".hki", "")))
+                        {
+                            listPROFILE.Items.Add(file.Name.Replace(".hki", "") + @"(2)");
+                            USERprofiles.Add(file.Name.Replace(".hki", "") + @"(2)", subdirectory.FullName);
+                            break;
+                        }
+                       else
+                        {
+                            
+                            listPROFILE.Items.Add(file.Name.Replace(".hki", ""));
+                            USERprofiles.Add(file.Name.Replace(".hki", ""), subdirectory.FullName);
+                            break;
+
+                        }
+                        
+
+                        if (!isONCE)
+                        {
+                            listPROFILE.Text = file.FullName.Replace(".hki", "");
+                        }
+                        isONCE = true;
+                        
+                        
+                    }
+                    
+                    //    FileInfo fl = new FileInfo(subdirectory + @"\profile\Player.nfp");
+                    //DEparser stp = new DEparser();
+                    //stp.Decompress(fl);
+
+                    //stp.GetPlayernfp(stp.newFileName);
+                    //System.Windows.Forms.Clipboard.SetText(stp.newFileName);
+                    //MessageBox.Show(stp.newFileName);
+
+
+
+
+
+                    //if (!USERprofiles.ContainsKey(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", "")))
+                    //{
+                    //    USERprofiles.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", ""), stp.currentFileName.Replace(@"\profile\Player.nfp", ""));
+                    //    listPROFILE.Items.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", ""));
+                    //}
+                    //else
+                    //{
+                    //    USERprofiles.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", "") + @"(2)", stp.currentFileName.Replace(@"\profile\Player.nfp", ""));
+                    //    listPROFILE.Items.Add(stp.CollectPlayerName(stp.playerTEXT).Replace(".hki", "") + @"(2)");
+                    //}
+
 
                 }
             }
