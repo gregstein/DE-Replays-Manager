@@ -81,3 +81,4 @@ Libraries and projects used within DE Replays Manager
 
 - aoe2.net API: https://aoe2.net/
 - Fody Costura: https://github.com/Fody/Costura
+- Steam DepotDownloader: https://github.com/SteamRE/DepotDownloader
