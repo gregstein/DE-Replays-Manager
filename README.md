@@ -24,6 +24,7 @@ This is a demo of **DE-Replays-Manager** UI
 * [Requirements](#requirements)
 * [Tutorials](#tutorials)
 * [Screenshots](#screenshots)
+* [Sponsors](#sponsors)
 * [Donations](#donations)
 * [Contacts](#contacts)
 * [References](#references)
@@ -64,6 +65,10 @@ Coming up soon..
 **Live Player Search**
 
 <img src="https://i.imgur.com/ANsp0Bk.jpg" width="622">
+
+## Sponsors
+This project is sponsored By:
+* <a href="https://www.aoebuilds.com/">AoEBuilds.Com</a>
 
 ## Donations
 **You** want to show Your Love❤️ to This Project? 
