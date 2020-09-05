@@ -50,7 +50,8 @@ Go To <a href="https://github.com/gregstein/DE-Replays-Manager/releases">Release
 
 ## Tutorials
 
-Coming up soon..
+* How To Watch AoE2 DE Recorded Games: https://www.youtube.com/watch?v=vjqe3c56onI
+* How To Downgrade to Previous Game Versions: https://www.youtube.com/watch?v=izI0OjphSos
 
 ## Screenshots
 
