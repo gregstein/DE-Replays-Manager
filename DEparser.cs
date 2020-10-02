@@ -1,4 +1,5 @@
-﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -162,7 +163,29 @@ namespace De_Roll
             }
 
         }
+        private byte[] DeREC(MemoryStream ms)
+        {
+            ms.Seek(0, SeekOrigin.Begin);
+            Inflater inflater = new Inflater(true);
+            InflaterInputStream inStream = new InflaterInputStream(ms, inflater);
+            byte[] buf = new byte[5000000];
 
+            int buf_pos = 0;
+            int count = buf.Length;
+
+            while (true)
+            {
+                int numRead = inStream.Read(buf, buf_pos, count);
+                if (numRead <= 0)
+                {
+                    break;
+                }
+                buf_pos += numRead;
+                count -= numRead;
+            }
+            File.WriteAllBytes("test.txt", buf);
+            return buf;
+        }
         public string GetPlayernfp(string myrec)
         {
             string rosText = File.ReadAllText(myrec);
@@ -234,6 +257,13 @@ namespace De_Roll
                         playerDB.Add(RetName(str));
                     // do something with the line
                 }
+                else if(str.Contains(":"))
+                {
+                    Regex pattern = new Regex(@"@#\d+ (.*)");
+                    Match match = pattern.Match(str);
+                    playerDB.Add(match.Groups[1].Value.Split(':').FirstOrDefault());
+                }
+                else { continue; }
             }
 
 
@@ -248,7 +278,7 @@ namespace De_Roll
                 {
                     foreach (string ln in playerDB)
                     {
-                        if (str.Contains(ln) & !str.Contains("advanced"))
+                        if (!str.Contains("advanced"))
                         {
 
                             Regex pattern = new Regex(@"@#\d+ (.*)");
@@ -260,6 +290,7 @@ namespace De_Roll
 
                     // do something with the line
                 }
+                else { continue; }
             }
 
 

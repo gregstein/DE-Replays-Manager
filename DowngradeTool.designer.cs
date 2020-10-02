@@ -45,6 +45,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.validitypng = new System.Windows.Forms.PictureBox();
             this.settingbtn = new ComponentFactory.Krypton.Toolkit.KryptonButton();
+            this.styleManager1 = new DevComponents.DotNetBar.StyleManager(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.cbPATCH)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1.Panel)).BeginInit();
@@ -73,6 +74,7 @@
             this.cbPATCH.Enabled = false;
             this.cbPATCH.Items.AddRange(new object[] {
             "Select Patch Version",
+            "23 September 2020 (40874)",
             "25 August 2020 (40220)",
             "28 July 2020 (39515)",
             "21 July 2020 (39284)",
@@ -230,10 +232,15 @@
             this.settingbtn.Values.Text = "Settings";
             this.settingbtn.Click += new System.EventHandler(this.settingbtn_Click);
             // 
+            // styleManager1
+            // 
+            this.styleManager1.ManagerStyle = DevComponents.DotNetBar.eStyle.Office2010Silver;
+            this.styleManager1.MetroColorParameters = new DevComponents.DotNetBar.Metro.ColorTables.MetroColorGeneratorParameters(System.Drawing.Color.White, System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(87)))), ((int)(((byte)(154))))));
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(430, 208);
             this.Controls.Add(this.settingbtn);
@@ -286,6 +293,7 @@
         private System.Windows.Forms.Label steamLBL;
         private System.Windows.Forms.PictureBox steamSTATUS;
         private ComponentFactory.Krypton.Toolkit.KryptonButton settingbtn;
+        private DevComponents.DotNetBar.StyleManager styleManager1;
     }
 }
 

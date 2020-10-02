@@ -1,0 +1,7 @@
+﻿<?xml version='1.0'?>
+<Obfuscator>
+  <Var name="InPath" value="C:\Users\pc\Documents\VS\DERe\DE-Replays-Manager\bin\Debug" />
+  <Var name="OutPath" value="C:\Users\pc\Documents\VS\DERe\DE-Replays-Manager\bin\Debug\Obfuscator_Output" />
+  <Var name="HidePrivateApi" value="true" />
+  <Module file="$(InPath)\DeReplaysManager.exe" />
+</Obfuscator>

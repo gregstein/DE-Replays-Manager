@@ -20,13 +20,19 @@ using DEBoard;
 using System.Reflection;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using Dropbox.Api;
+using Dropbox.Api.Files;
+using DeReplaysManager;
+using DevComponents.DotNetBar.Controls;
+using Microsoft.Win32;
 
 namespace DEReplaysManager
 {
+    
     public partial class Form1 : OfficeForm
     {
         public Form1()
-        {
+        {   
             InitializeComponent();
         }
 
@@ -54,7 +60,7 @@ namespace DEReplaysManager
                                                         32911
                                                        };
         public static List<string> refvst = new List<string>{
-
+                                                        "23 September 2020 (40874)",
                                                         "25 August 2020 (40220)",
                                                         "28 July 2020 (39515)",
                                                         "21 July 2020 (39284)",
@@ -71,6 +77,9 @@ namespace DEReplaysManager
                                                         "20 November 2019 (33059)",
                                                         "16 November 2019 (32911)"
                                                         };
+        private List<int> lstrev = new List<int>();
+        private string GameFN;
+        private List<string> Srevs = new List<string>();
         private void RefreshSaves(string mydir)
         {
             SaveGame = mydir + "\\savegame";
@@ -222,13 +231,13 @@ namespace DEReplaysManager
         {
             return exludedDirList.Any(d => new DirectoryInfo(target).Name.Equals(d));
         }
-        private void ScanDirectories()
+        private async void ScanDirectories()
         {
             DEparser dp = new DEparser();
             //string[] subdirectoryEntries = Directory.GetDirectories(dp.dePATH);
-            var subdirectoryEntries = new DirectoryInfo(dp.dePATH).GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTimeUtc);
+            var subdirectoryEntries = new DirectoryInfo(dp.dePATH).GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTime);
             bool isONCE = false;
-
+            int i = 0;
             foreach (DirectoryInfo subdirectory in subdirectoryEntries)
             {
                 
@@ -236,18 +245,23 @@ namespace DEReplaysManager
                 {
                     DIRprofiles.Add(subdirectory.FullName);
                     DirectoryInfo info = new DirectoryInfo(subdirectory.FullName + "\\profile");
-                    FileInfo[] files = info.GetFiles("*.hki").OrderBy(p => p.CreationTime).ToArray();
+                    FileInfo[] files = info.GetFiles("*.hki").OrderByDescending(p => p.LastWriteTime).ToArray();
                     foreach (FileInfo file in files)
                     {
+                        i++;
                        if(listPROFILE.Items.Contains(file.Name.Replace(".hki", "")))
                         {
-                            listPROFILE.Items.Add(file.Name.Replace(".hki", "") + @"(2)");
-                            USERprofiles.Add(file.Name.Replace(".hki", "") + @"(2)", subdirectory.FullName);
+                            listPROFILE.Items.Add(file.Name.Replace(".hki", "") + $"({i})");
+                            USERprofiles.Add(file.Name.Replace(".hki", "") + $"({i})", subdirectory.FullName);
                             break;
                         }
                        else
                         {
-                            
+                            if (!isONCE)
+                            {
+                                isONCE = true;
+                                listPROFILE.Text = file.FullName.Replace(".hki", "");
+                            }
                             listPROFILE.Items.Add(file.Name.Replace(".hki", ""));
                             USERprofiles.Add(file.Name.Replace(".hki", ""), subdirectory.FullName);
                             break;
@@ -255,11 +269,8 @@ namespace DEReplaysManager
                         }
                         
 
-                        if (!isONCE)
-                        {
-                            listPROFILE.Text = file.FullName.Replace(".hki", "");
-                        }
-                        isONCE = true;
+                       
+                        
                         
                         
                     }
@@ -315,6 +326,19 @@ namespace DEReplaysManager
                 }
             }
 
+            //END
+            //Check Settings
+         
+            await GrabDef();
+            if(GetREG() != null)
+            {
+                string[] sp = GetREG().Split(new string[] { "|>" }, StringSplitOptions.None);
+                if(Directory.Exists(sp[1]))
+                {
+                    listPROFILE.Text = sp[0];
+                    defSAVE.Text = sp[0];
+                }
+            }
         }
         private string GetDate(string file)
         {
@@ -357,6 +381,7 @@ namespace DEReplaysManager
             DateTime p13 = new DateTime(2020, 7, 21);
             DateTime p14 = new DateTime(2020, 7, 28);
             DateTime p15 = new DateTime(2020, 8, 25);
+            DateTime p16 = new DateTime(2020, 9, 23);
             if (fDate >= p1 && fDate < p2)
                 return @"16 November 2019 (32911)";
             else if (fDate >= p2 && fDate < p3)
@@ -385,8 +410,10 @@ namespace DEReplaysManager
                 return @"21 July 2020 (39284)";
             else if (fDate >= p14 && fDate < p15)
                 return @"28 July 2020 (39515)";
-            else if (fDate >= p15)
+            else if (fDate >= p15 && fDate < p16)
                 return @"25 August 2020 (40220)";
+            else if (fDate >= p16)
+                return @"23 September 2020 (40874)";
             return null;
         }
         
@@ -430,8 +457,12 @@ namespace DEReplaysManager
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.Text += " " + File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "version.txt").Replace(".0.0","");
             ScanDirectories();
+            
+           
 
+            //MessageBox.Show("value is:" + GetREG());
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -630,7 +661,7 @@ namespace DEReplaysManager
                 DEparser recp = new DEparser();
                 string chat = recp.GetStrings(SaveGame + @"\" + repLIST.SelectedItem.ToString());
                 recp.CollectPlayers(chat);
-                foreach (string str in recp.playerDB)
+                foreach (string str in recp.playerDB.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct())
                 {
                     playerNAMES.Items.Add(str);
                 }
@@ -661,8 +692,8 @@ namespace DEReplaysManager
             {
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                
-                WebClient webClient = new WebClient();
+
+                System.Net.WebClient webClient = new System.Net.WebClient();
                 //webClient.Headers.Add("User-Agent: Other"); 
                 //webClient.Headers.Add("Content-Type", "application/zip");
                 //webClient.UseDefaultCredentials = true;
@@ -679,8 +710,8 @@ namespace DEReplaysManager
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             //progressBar1.Value = e.ProgressPercentage;
-            progressBar1.Maximum = (int)e.TotalBytesToReceive / 100;
-            progressBar1.Value = (int)e.BytesReceived / 100;
+            proBAR.Maximum = (int)e.TotalBytesToReceive / 100;
+            proBAR.Value = (int)e.BytesReceived / 100;
 
         }
         private async void Completed(object sender, AsyncCompletedEventArgs e)
@@ -726,13 +757,18 @@ namespace DEReplaysManager
         private void refreshersaves_Click(object sender, EventArgs e)
         {
             repLIST.Items.Clear();
-            RefreshSaves(SaveGame.Replace(@"\savegame", ""));
+            listPROFILE.Items.Clear();
+            USERprofiles.Clear();
+            defSAVE.Items.Clear();
+            repLIST.Items.Clear();
+            ScanDirectories();
+            //RefreshSaves(SaveGame.Replace(@"\savegame", ""));
         }
         public async Task<string> DownloadStringAsync(Uri uri, int timeOut = 60000)
         {
             string output = null;
             bool cancelledOrError = false;
-            using (var client = new WebClient())
+            using (var client = new System.Net.WebClient())
             {
                 client.Encoding = System.Text.Encoding.UTF8;
                 client.Proxy = null;
@@ -791,6 +827,10 @@ namespace DEReplaysManager
         }
         private async void kryptonTextBox2_TextChanged(object sender, EventArgs e)
         {
+            try
+            {
+
+            
             kryptonDataGridView3.Rows.Clear();
             await Task.Delay(500);
 
@@ -808,11 +848,14 @@ namespace DEReplaysManager
                     i++;
                     LinkLabel ln = new LinkLabel();
                     Button btn = new Button();
+                    Bitmap im = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + @"flags\" + l.Country.ToString().ToLower() + ".png");
+                    
+                    
                     ln.Text = "View";
                     ln.Name = "view" + i.ToString();
                     btn.Name = "btn" + i.ToString();
                     btn.Text = "Join";
-                    kryptonDataGridView3.Rows.Add(l.Rank, l.Name, l.Rating, l.Games, "View", "View", @"https://www.ageofempires.com/stats/?profileId=" + l.ProfileId + @"&game=age2", @"http://steamcommunity.com/profiles/" + l.SteamId);
+                    kryptonDataGridView3.Rows.Add(im, l.Name, l.Rating, l.HighestRating, l.Wins + @" / " + l.Losses, "Replays", "Profile", @"https://www.ageofempires.com/stats/?profileId=" + l.ProfileId + @"&game=age2", @"https://steamcommunity.com/profiles/" + l.SteamId, l.Rank);
                 }
                 RemoveDuplicate(kryptonDataGridView3);
             }
@@ -820,20 +863,25 @@ namespace DEReplaysManager
             {
                 kryptonDataGridView3.Rows.Clear();
             }
+            }
+            catch (SystemException)
+            {
+
+            }
         }
 
         private void kryptonDataGridView3_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
-                if (e.ColumnIndex == 4)//if ur link columnIndex (complain_no ColumnIndex) is zero 
-                {
-                    Process.Start(kryptonDataGridView3.SelectedCells[6].Value.ToString());
-
-                }
                 if (e.ColumnIndex == 5)//if ur link columnIndex (complain_no ColumnIndex) is zero 
                 {
                     Process.Start(kryptonDataGridView3.SelectedCells[7].Value.ToString());
+
+                }
+                if (e.ColumnIndex == 6)//if ur link columnIndex (complain_no ColumnIndex) is zero 
+                {
+                    Process.Start(kryptonDataGridView3.SelectedCells[8].Value.ToString());
 
                 }
             }
@@ -875,7 +923,7 @@ namespace DEReplaysManager
 
         private void updateschecker_Click(object sender, EventArgs e)
         {
-            DERMChecker();
+            AccessLink(AppDomain.CurrentDomain.BaseDirectory + "Updater.exe");
         }
         void DERMChecker()
         {
@@ -886,7 +934,7 @@ namespace DEReplaysManager
                 {
                     string version = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "version.txt");
 
-                    WebClient wk = new WebClient();
+                    System.Net.WebClient wk = new System.Net.WebClient();
                     wk.Headers.Add("user-agent", "DE Replays Manager");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     ServicePointManager.Expect100Continue = false; ServicePointManager.MaxServicePointIdleTime = 0;
@@ -990,6 +1038,360 @@ namespace DEReplaysManager
             //    PatchVersionSensor(repLIST.SelectedItem.ToString());
             //}
             
+        }
+        public bool PSubmiter(ListBoxItem rec, string title)
+        {
+            //ListBoxItem rec = new ListBoxItem();
+            rec.Text = title;
+            rec.Image = DeReplaysManager.Properties.Resources.clip_rec;
+            listsubmitee.Items.Add(rec);
+            return true;
+        }
+        public bool PReviewer(ListBoxItem rec, string user)
+        {
+            //ListBoxItem rec = new ListBoxItem();
+            rec.Text = user;
+            rec.Image = DeReplaysManager.Properties.Resources.defuser;
+            listsubmitee.Items.Add(rec);
+            return true;
+        }
+        public async Task<int> IterateReviewsCount(string recnm)
+        {
+            pgsbar.Visible = true;
+            Core it = new Core();
+
+            using (var dbx = new DropboxClient(it._key))
+            {
+                var sharedLink = new SharedLink("derm");
+                var sharedFiles = await dbx.Files.ListFolderAsync("", true);
+                int j = 0;
+                foreach (var file in sharedFiles.Entries)
+                {
+                    
+                    ListBoxItem st = new ListBoxItem();
+                    if (file.PathDisplay.EndsWith(".rev") && file.Name != "derm" && file.Name.StartsWith(recnm))
+                    {
+                        j++;
+                        Regex word = new Regex(@"(.*)-(\d+?).rev");
+                        Match m = word.Match(file.Name);
+
+
+                        if (!lstrev.Contains(int.Parse(m.Groups[2].Value)))
+                        {
+                            lstrev.Add(j);
+                        }
+
+
+
+                    }
+
+
+                }
+
+                pgsbar.Visible = false;
+                return lstrev.Count != 0 ? lstrev.LastOrDefault() : 0;
+
+            }
+
+
+        }
+        public async Task<int> IterateRecs()
+        {
+            try { 
+            await Task.Delay(100);
+            pgsbar.Visible = true;
+            Core it = new Core();
+            listsubmitee.Items.Clear();
+            using (var dbx = new DropboxClient(it._key))
+            {
+                var sharedLink = new SharedLink("derm");
+                var sharedFiles = await dbx.Files.ListFolderAsync("", true);
+                
+                foreach (var file in sharedFiles.Entries.Reverse())
+                {
+                    ListBoxItem st = new ListBoxItem();
+                    if (file.PathDisplay.EndsWith(".derm") && file.Name != "derm")
+                    {
+                        
+                        PSubmiter(st, file.Name.Replace(".derm", ""));
+                        st.Text += " (" + await IterateReviewsCount(file.PathDisplay.Replace(".derm", "").Replace("/derm/","")) + " Reviewers)";
+                            lstrev.Clear();
+
+                    }
+                   
+                        
+                }
+
+            }
+            pgsbar.Visible = false;
+            return 0;
+            }
+            catch (System.Net.Http.HttpRequestException) { pgsbar.Visible = false; MessageBox.Show("No Internet!"); return 0; }
+        }
+        public static string Capitalize(string input)
+        {
+            if (String.IsNullOrEmpty(input))
+                throw new ArgumentException("NULL STRING!");
+            return input.First().ToString().ToUpper() + input.Substring(1);
+        }
+        public async Task<int> IterateRevs(string fn)
+        {
+            await Task.Delay(100);
+            progressBarX1.Visible = true;
+            Core it = new Core();
+            //clear reviewer names
+            reviewerslist.Items.Clear();
+            //clear review link list
+            Srevs.Clear();
+            int j = 0;
+            using (var dbx = new DropboxClient(it._key))
+            {
+                var sharedLink = new SharedLink("derm");
+                var sharedFiles = await dbx.Files.ListFolderAsync("", true);
+
+                foreach (var file in sharedFiles.Entries)
+                {
+                   
+                    ListBoxItem st = new ListBoxItem();
+                    if (file.PathDisplay.EndsWith(".rev") && file.Name != "derm" && file.Name.Contains(GameFN))
+                    {
+                        j++;
+                        Core rp = new Core();
+                        Reviewer nfo = new Reviewer();
+                        ReplayParser dr = new ReplayParser();
+                        dr = ReplayParser.FromJsonText(await rp.DownloadSTRING(file.Name));
+
+                        //Skip empty entries
+                        if (dr == null)
+                            continue;
+                        //Or parse reviewers
+                        st.Text = Capitalize(dr.Nickname);
+                        if(dr.isVerified == true)
+                            st.Symbol = "\uf00c";
+                        else
+                            st.Symbol = "\uf007";
+
+                        reviewerslist.Items.Add(st);
+                        Srevs.Add(file.Name);
+                        //Counting reviews per recorded game
+                        //reviewerslist.Items.Add(await IterateReviewsCount(file.PathDisplay.Replace(".rev", "").Replace("/derm/", "")));
+
+
+                    }
+
+
+                }
+
+            }
+            if (j == 0)
+                reviewerslist.Items.Add("No Reviews.");
+
+            progressBarX1.Visible = false;
+            return 0;
+        }
+        private async void sideNavItem8_Click(object sender, EventArgs e)
+        {
+            sideNavItem8.Enabled = false;
+            Qdesc.SelectionStart = Qdesc.Text.Length;
+            await IterateRecs();
+            sideNavItem8.Enabled = true;
+        }
+
+        private void subreview_Click(object sender, EventArgs e)
+        {
+            Submission subf = new Submission();
+            subf.RecInstance = SaveGame + @"\" + repLIST.SelectedItem.ToString();
+            subf.Show();
+        }
+
+        private void SendREV_Click(object sender, EventArgs e)
+        {
+            if(listsubmitee.SelectedItems.Count == 1)
+            {
+                ReplayView rv = new ReplayView();
+                rv.JsonFile = listsubmitee.SelectedItem.ToString().Split(new string[] { " ("}, StringSplitOptions.None).FirstOrDefault() + ".json";
+                rv.Show();
+            }
+        }
+
+        private async void listsubmitee_ItemClick(object sender, EventArgs e)
+        {
+            try
+            {
+                //Replays Info
+                Rprog.Visible = true;
+                listsubmitee.Enabled = false;
+                Core rp = new Core();
+                ReplayParser dr = new ReplayParser();
+                dr = ReplayParser.FromJsonText(await rp.DownloadSTRING(listsubmitee.SelectedItem.ToString().Split(new string[] { " (" }, StringSplitOptions.None).FirstOrDefault() + ".json"));
+                Qdesc.Text = dr.Description;
+                Qtitle.Text = dr.Title;
+                if((bool)dr.TicketKey)
+                {
+                    vlblb.Visible = true;
+                    pictureBox4.Visible = true;
+                    ticketlbl.Visible = true;
+                }
+                else
+                {
+                    vlblb.Visible = false;
+                    pictureBox4.Visible = false;
+                    ticketlbl.Visible = false;
+                }
+                GameFN = Path.GetFileNameWithoutExtension(dr.Recname);
+                Rprog.Visible = false;
+                
+                //Reviews
+                progressBarX1.Enabled = true;
+                await IterateRevs(GameFN);
+                listsubmitee.Enabled = true;
+                progressBarX1.Enabled = false;
+            }
+            catch(System.Net.Http.HttpRequestException)
+            {
+                MessageBox.Show("No Internet!");
+            }
+            catch(SystemException)
+            {
+                listsubmitee.Enabled = true;
+                Rprog.Visible = false;
+            }
+            
+            
+
+
+        }
+
+        private void reviewerslist_ItemClick(object sender, EventArgs e)
+        {
+            reviewerslist.Enabled = false;
+            //skip defaul value
+            if (reviewerslist.SelectedItem.ToString() == "No Reviews.")
+                return;
+            //select reviewers
+            if (reviewerslist.SelectedIndex != -1)
+            {
+                
+                //Grab review url
+                string rlnk = Srevs[reviewerslist.SelectedIndex];
+                //create new form to parse reviewer
+                ReviewSingleton rs = new ReviewSingleton();
+                rs.SetURL = rlnk;
+                rs.SetAUTH = reviewerslist.SelectedItem.ToString();
+                rs.Show();
+            }
+            reviewerslist.Enabled = true;
+
+        }
+
+         async Task<int> GrabDef()
+        {
+            await Task.Delay(100);
+            
+                //parse ids
+                foreach (var s in USERprofiles)
+                {
+                    defSAVE.Items.Add(s.Key);
+                }
+
+           
+            return 0;
+        }
+        private void defSAVE_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            repLIST.Items.Clear();
+            RefreshSaves(SaveGame.Replace(@"\savegame", ""));
+            foreach (var f in USERprofiles)
+            {
+                if(f.Key == defSAVE.Text)
+                {
+                    AddREG(defSAVE.Text + "|>" + f.Value);
+                    break;
+                }
+            }
+            string[] sy = GetREG().Split(new string[] { "|>" }, StringSplitOptions.None);
+            listPROFILE.Text = sy[0];
+            if (defSAVE.Focused)
+            MessageBox.Show("Default SaveGame is: " + sy[1], "Success!");
+
+        }
+        public static bool checkExistance()
+        {
+            RegistryKey winLogonKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\DERM", true);
+            return (winLogonKey.GetValueNames().Contains("DERM"));
+        }
+        private void AddREG(string val)
+        {
+
+            using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\DERM\SAVEGAME"))
+            {
+                //key.CreateSubKey("SAVEGAME");
+                key.SetValue("SV", val, RegistryValueKind.String);
+            }  
+        }
+        private string GetREG()
+        {
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\DERM\SAVEGAME"))
+            {
+                if (key != null)
+                    return key.GetValue("SV").ToString();
+                else
+                {
+                    foreach (var f in USERprofiles)
+                    {
+                        
+                            AddREG(defSAVE.Text + "|>" + f.Value);
+                            defSAVE.Text = f.Key;
+                            break;
+                        
+                    }
+                    return null;
+                }
+            }    
+        }
+
+        private void kryptonDataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void linkSG_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            
+            //AccessLink()
+        }
+
+        private void playerNAMES_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void flowLayoutPanel3_SizeChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void tableLayoutPanel2_SizeChanged(object sender, EventArgs e)
+        {
+            //playerNAMES.Width = flowLayoutPanel3.Width;
+        }
+
+        private void defSHOW_Click(object sender, EventArgs e)
+        {
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\DERM\SAVEGAME"))
+            {
+                if (key != null)
+                    AccessLink(key.GetValue("SV").ToString().Split(new string[] { "|>" }, StringSplitOptions.None).ElementAt(1) + "\\savegame");
+                else
+                {
+
+                }
+            }
+        }
+
+        private void pictureBox4_Click(object sender, EventArgs e)
+        {
+            AccessLink(@"https://www.aoebuilds.com/");
         }
     }
 }

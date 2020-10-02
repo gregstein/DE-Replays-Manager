@@ -84,7 +84,7 @@ namespace De_Roll
             string result = await CheckDotNet();
             if(!result.Contains("Usage"))
             {
-                DialogResult dialogResult = MessageBox.Show("DotNet Runtime is missing. Download it now?", "Missing Component!", MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show(new Form { TopMost = true }, "DotNet Runtime is missing. Download it now?", "Missing Component!", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
                     if (archOS)
@@ -150,7 +150,7 @@ namespace De_Roll
             {
 
             
-            string argz = "/K dotnet \"" + System.AppDomain.CurrentDomain.BaseDirectory + "\\DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir " + SaveDirectoryPath() + " -username " + userBOX.Text + " -password " + passBOX.Text + " -remember-password -filelist " + "\"" + System.AppDomain.CurrentDomain.BaseDirectory + "exclude.txt" + "\"" + " && exit";
+            string argz = "/K dotnet \"" + System.AppDomain.CurrentDomain.BaseDirectory + "\\DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir " + "\"" + SaveDirectoryPath() + "\"" + " -username " + userBOX.Text + " -password " + "\"" + passBOX.Text + "\"" + " -remember-password -filelist " + "\"" + System.AppDomain.CurrentDomain.BaseDirectory + "exclude.txt" + "\"" + " && exit";
             //MessageBox.Show(argz);
 
             Process p = new Process();
@@ -180,7 +180,7 @@ namespace De_Roll
         {
             if(SaveDirectoryPath() != null)
             {
-                string argz = "/K dotnet \"" + System.AppDomain.CurrentDomain.BaseDirectory + "\\DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir " + SaveDirectoryPath() + " -username " + userBOX.Text + " -password " + passBOX.Text + " -remember-password -filelist " + "\"" + System.AppDomain.CurrentDomain.BaseDirectory + "exclude.txt" + "\"" + " && exit";
+                string argz = "/K dotnet \"" + System.AppDomain.CurrentDomain.BaseDirectory + "\\DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir " + "\"" + SaveDirectoryPath() + "\"" + " -username " + userBOX.Text + " -password " + "\"" + passBOX.Text + "\"" + " -remember-password -filelist " + "\"" + System.AppDomain.CurrentDomain.BaseDirectory + "exclude.txt" + "\"" + " && exit";
                 MessageBox.Show(argz);
 
             Process p = new Process();
@@ -214,6 +214,7 @@ namespace De_Roll
         }
         public async Task<string> DownloadStringAsync(Uri uri, int timeOut = 60000)
         {
+            try { 
             string output = null;
             bool cancelledOrError = false;
             using (var client = new WebClient())
@@ -246,6 +247,12 @@ namespace De_Roll
             }
 
             return await Task.FromResult(output);
+            }
+            catch (SystemException)
+            {
+
+                return await Task.FromResult(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "depatches.txt") ? File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "depatches.txt"):"");
+            }
         }
         private async void DepotCommander(string version)
         {
@@ -442,7 +449,7 @@ namespace De_Roll
                     timer1.Stop();
                 }
             }
-            catch
+            catch(SystemException)
             {
                 steamLBL.ForeColor = Color.Black;
                 steamLBL.Text = "Steam OFF";

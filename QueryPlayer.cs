@@ -23,6 +23,19 @@
 
         [JsonProperty("leaderboard", NullValueHandling = NullValueHandling.Ignore)]
         public Leaderboard[] Leaderboard { get; set; }
+
+        [JsonProperty("country", NullValueHandling = NullValueHandling.Ignore)]
+        public string country { get; set; }
+
+        [JsonProperty("wins", NullValueHandling = NullValueHandling.Ignore)]
+        public long? wins { get; set; }
+
+        [JsonProperty("losses", NullValueHandling = NullValueHandling.Ignore)]
+        public long? losses { get; set; }
+        [JsonProperty("highest_rating", NullValueHandling = NullValueHandling.Ignore)]
+        public long? highest_rating { get; set; }
+        
+
     }
 
     public partial class Leaderboard
