@@ -1,0 +1,383 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <Import Project="packages\Obfuscar.2.2.28\build\obfuscar.props" Condition="Exists('packages\Obfuscar.2.2.28\build\obfuscar.props')" />
+  <Import Project="packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D02FDB51-F42A-48B0-A86E-5526F38B3ED9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DeReplaysManager</RootNamespace>
+    <AssemblyName>DeReplaysManager</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>DEReplaysManager.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>dereplays.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ComponentFactory.Krypton.Design">
+      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Docking">
+      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Navigator, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Navigator.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Ribbon, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Ribbon.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Toolkit">
+      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentFactory.Krypton.Workspace, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Workspace.dll</HintPath>
+    </Reference>
+    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
+    </Reference>
+    <Reference Include="DevComponents.DotNetBar.Keyboard, Version=14.1.0.37, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
+    <Reference Include="DevComponents.DotNetBar.Layout, Version=14.1.0.37, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
+    <Reference Include="DevComponents.DotNetBar2, Version=12.3.0.0, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Dropbox.Api, Version=5.0.0.0, Culture=neutral, PublicKeyToken=310f0e82fbb45d01, processorArchitecture=MSIL">
+      <HintPath>packages\Dropbox.Api.5.0.0\lib\net45\Dropbox.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\..\WindowsFormsApplication3\Updater\bin\Debug\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SevenZip">
+      <HintPath>.\SevenZip.dll</HintPath>
+    </Reference>
+    <Reference Include="Steamworks.NET">
+      <HintPath>..\..\..\..\source\repos\De-Roll\bin\Debug\Steamworks.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="zlib.net">
+      <HintPath>D:\RAW\AnalyseMGZFile\AnalyseMGZFile\bin\Debug\zlib.net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DEparser.cs" />
+    <Compile Include="depotc.cs" />
+    <Compile Include="DowngradeTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DowngradeTool.designer.cs">
+      <DependentUpon>DowngradeTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DTSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DTSettings.Designer.cs">
+      <DependentUpon>DTSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportREC.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportREC.Designer.cs">
+      <DependentUpon>ImportREC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="KeyInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="KeyInfo.Designer.cs">
+      <DependentUpon>KeyInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProcessAsyncHelper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryPlayer.cs" />
+    <Compile Include="RegCalls.cs" />
+    <Compile Include="ReplayParser.cs" />
+    <Compile Include="ReplayView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReplayView.Designer.cs">
+      <DependentUpon>ReplayView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="replib.cs" />
+    <Compile Include="ReviewSingleton.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReviewSingleton.Designer.cs">
+      <DependentUpon>ReviewSingleton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SearchPlayer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchPlayer.designer.cs">
+      <DependentUpon>SearchPlayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Submission.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Submission.Designer.cs">
+      <DependentUpon>Submission.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DowngradeTool.resx">
+      <DependentUpon>DowngradeTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DTSettings.resx">
+      <DependentUpon>DTSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportREC.resx">
+      <DependentUpon>ImportREC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KeyInfo.resx">
+      <DependentUpon>KeyInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="ReplayView.resx">
+      <DependentUpon>ReplayView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReviewSingleton.resx">
+      <DependentUpon>ReviewSingleton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SearchPlayer.resx">
+      <DependentUpon>SearchPlayer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Submission.resx">
+      <DependentUpon>Submission.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dragdrop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-rename-40.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-delete-20.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-archive-folder-30.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-folder-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons8-repeat-48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="uncheckedico.png" />
+    <None Include="checkedico.png" />
+    <None Include="aoebuildslogo.png" />
+    <None Include="buykeys.jpg" />
+    <Content Include="depatches.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dereplays.ico" />
+    <Content Include="dereplaysmanager.ico" />
+    <Content Include="exclude.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FodyWeavers.xml" />
+    <Content Include="FodyWeavers_old.xml" />
+    <None Include="Resources\icons8-checkmark-64.png" />
+    <None Include="Resources\cloudupdate.png" />
+    <None Include="Resources\aoe2de.png" />
+    <None Include="Resources\dotred.png" />
+    <None Include="Resources\dotgreen.png" />
+    <None Include="Resources\steam-icon.png" />
+    <None Include="Resources\reload.gif" />
+    <None Include="Resources\sendrev.png" />
+    <None Include="patronderm.png" />
+    <None Include="Resources\icons8-question-mark-64.png" />
+    <None Include="Resources\pacman-re.gif" />
+    <None Include="Resources\replayinfo.png" />
+    <None Include="Resources\reviewsinfo.png" />
+    <None Include="Resources\icons8-verified-badge-48.png" />
+    <None Include="Resources\clip-rec.png" />
+    <None Include="Resources\defuser.png" />
+    <None Include="Resources\icons8-save-48.png" />
+    <None Include="Resources\bullet-valid-icon.png" />
+    <None Include="Resources\no-icon.png" />
+    <None Include="Resources\techtree_panel.png" />
+    <None Include="Resources\icons8-play-button-48.png" />
+    <Content Include="obfuscar.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\importFLS.png" />
+    <Content Include="steam_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="steam_appid.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="strings.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\Fody.6.2.4\build\Fody.targets" Condition="Exists('packages\Fody.6.2.4\build\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Fody.6.2.4\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fody.6.2.4\build\Fody.targets'))" />
+    <Error Condition="!Exists('packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
+    <Error Condition="!Exists('packages\Obfuscar.2.2.28\build\obfuscar.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Obfuscar.2.2.28\build\obfuscar.props'))" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
