@@ -75,7 +75,7 @@ namespace De_Roll
                 return _connected;
 
             }
-            catch (Exception)
+            catch (SystemException)
             {
                 return _connected;
             }
