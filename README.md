@@ -46,7 +46,7 @@ Go To <a href="https://github.com/gregstein/DE-Replays-Manager/releases">Release
 
 * Minimum DotNet Runtimes 6: https://dotnet.microsoft.com/download/dotnet/thank-you/sdk-6.0.100-windows-x64-installer
 
-* **Minimum Windows System:** Windows 7/8/8.1/10 or later. (Windows 10 is recommended)
+* **Minimum Windows System:** Windows 7/8/8.1/10 or later. (Windows 10 or 11 recommended)
 
 * **Minimum .NET Framework:** [.NET Framework 4.5](https://www.microsoft.com/fr-fr/download/details.aspx?id=30653) or later.
 
