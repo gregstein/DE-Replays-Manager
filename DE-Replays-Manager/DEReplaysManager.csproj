@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
-  <Import Project="packages\Obfuscar.2.2.28\build\obfuscar.props" Condition="Exists('packages\Obfuscar.2.2.28\build\obfuscar.props')" />
-  <Import Project="packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -11,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeReplaysManager</RootNamespace>
-    <AssemblyName>DeReplaysManager</AssemblyName>
+    <AssemblyName>DERM</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -92,29 +90,25 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ComponentFactory.Krypton.Design">
-      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Design.dll</HintPath>
+    <Reference Include="ComponentFactory.Krypton.Design, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\ComponentFactory.Krypton.Design.dll</HintPath>
     </Reference>
-    <Reference Include="ComponentFactory.Krypton.Docking">
-      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Docking.dll</HintPath>
+    <Reference Include="ComponentFactory.Krypton.Docking, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\ComponentFactory.Krypton.Docking.dll</HintPath>
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Navigator, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Navigator.dll</HintPath>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\ComponentFactory.Krypton.Navigator.dll</HintPath>
     </Reference>
     <Reference Include="ComponentFactory.Krypton.Ribbon, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Ribbon.dll</HintPath>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\ComponentFactory.Krypton.Ribbon.dll</HintPath>
     </Reference>
-    <Reference Include="ComponentFactory.Krypton.Toolkit">
-      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="ComponentFactory.Krypton.Workspace, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
+    <Reference Include="ComponentFactory.Krypton.Toolkit, Version=4.5.0.0, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\VS\WindowsFormsApplication3\WindowsFormsApplication3\bin\Debug\ComponentFactory.Krypton.Workspace.dll</HintPath>
-    </Reference>
-    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-      <HintPath>packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\ComponentFactory.Krypton.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="DevComponents.DotNetBar.Keyboard, Version=14.1.0.37, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
     <Reference Include="DevComponents.DotNetBar.Layout, Version=14.1.0.37, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
@@ -128,7 +122,7 @@
       <HintPath>packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
-      <HintPath>..\..\WindowsFormsApplication3\Updater\bin\Debug\Ionic.Zip.dll</HintPath>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -138,7 +132,7 @@
       <HintPath>.\SevenZip.dll</HintPath>
     </Reference>
     <Reference Include="Steamworks.NET">
-      <HintPath>..\..\..\..\source\repos\De-Roll\bin\Debug\Steamworks.NET.dll</HintPath>
+      <HintPath>D:\LocalFiles\VS\VS2\SenseiDE-Fresh\SenseiDE-Fresh\bin\Debug\Steamworks.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -155,13 +149,23 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="zlib.net">
-      <HintPath>D:\RAW\AnalyseMGZFile\AnalyseMGZFile\bin\Debug\zlib.net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\DERM Reader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DERM Reader.Designer.cs">
+      <DependentUpon>DERM Reader.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InputDialogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InputDialogForm.Designer.cs">
+      <DependentUpon>InputDialogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Libraries\Association.cs" />
+    <Compile Include="Libraries\DC.cs" />
     <Compile Include="Libraries\DEparser.cs" />
-    <Compile Include="Libraries\depotc.cs" />
     <Compile Include="Forms\DowngradeTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,6 +196,7 @@
     <Compile Include="Forms\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Libraries\depoc.cs" />
     <Compile Include="Libraries\ProcessAsyncHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -223,6 +228,9 @@
     <Compile Include="Forms\Submission.Designer.cs">
       <DependentUpon>Submission.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\DERM Reader.resx">
+      <DependentUpon>DERM Reader.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\DowngradeTool.resx">
       <DependentUpon>DowngradeTool.cs</DependentUpon>
     </EmbeddedResource>
@@ -231,6 +239,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportREC.resx">
       <DependentUpon>ImportREC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InputDialogForm.resx">
+      <DependentUpon>InputDialogForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\KeyInfo.resx">
       <DependentUpon>KeyInfo.cs</DependentUpon>
@@ -314,14 +325,17 @@
     <EmbeddedResource Include="Other\checkedico.png" />
     <EmbeddedResource Include="Other\aoebuildslogo.png" />
     <EmbeddedResource Include="Other\buykeys.jpg" />
+    <Content Include="ComponentFactory.Krypton.Design.dll" />
+    <Content Include="ComponentFactory.Krypton.Docking.dll" />
+    <Content Include="ComponentFactory.Krypton.Navigator.dll" />
+    <Content Include="ComponentFactory.Krypton.Ribbon.dll" />
+    <Content Include="ComponentFactory.Krypton.Toolkit.dll" />
     <Content Include="depatches.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="dereplays.ico" />
     <Content Include="dereplaysmanager.ico" />
-    <Content Include="exclude.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="exclude.txt" />
     <Content Include="FodyWeavers.xml" />
     <Content Include="FodyWeavers_old.xml" />
     <None Include="Resources\icons8-checkmark-64.png" />
@@ -345,9 +359,7 @@
     <None Include="Resources\no-icon.png" />
     <None Include="Resources\techtree_panel.png" />
     <None Include="Resources\icons8-play-button-48.png" />
-    <Content Include="obfuscar.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="obfuscar.xml" />
     <None Include="Resources\importFLS.png" />
     <Content Include="steam_api.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -361,15 +373,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\Fody.6.2.4\build\Fody.targets" Condition="Exists('packages\Fody.6.2.4\build\Fody.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\Fody.6.2.4\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Fody.6.2.4\build\Fody.targets'))" />
-    <Error Condition="!Exists('packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
-    <Error Condition="!Exists('packages\Obfuscar.2.2.28\build\obfuscar.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Obfuscar.2.2.28\build\obfuscar.props'))" />
-  </Target>
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

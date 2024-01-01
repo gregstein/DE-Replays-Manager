@@ -7,12 +7,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DEReplaysManager")]
-[assembly: AssemblyDescription("Manager AoE2 DE replays and more")]
+[assembly: AssemblyDescription("Downgrade AoE2 DE and Manage replays and")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GregStein")]
 [assembly: AssemblyProduct("DEReplaysManager")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("DEReplaysManager")]
+[assembly: AssemblyTrademark("DERM")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -30,6 +30,6 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.3.5.0")]
-[assembly: AssemblyFileVersion("1.3.5.0")]
+[assembly: AssemblyVersion("1.6.0.0")]
+[assembly: AssemblyFileVersion("1.6.0.0")]
 [assembly: NeutralResourcesLanguage("en")]

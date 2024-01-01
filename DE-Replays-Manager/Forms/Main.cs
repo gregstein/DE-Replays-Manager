@@ -33,11 +33,11 @@ namespace DEReplaysManager
             InitializeComponent();
             //DEL recs event
 
-            hook.KeyPressed +=
-                new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
+            //hook.KeyPressed +=
+            //    new EventHandler<KeyPressedEventArgs>(hook_KeyPressed);
             // register the control + alt + F12 combination as hot key.
             //hook.RegisterHotKey(ModifierKeys.Control | ModifierKeys.Alt,Keys.F12);
-            hook.RegisterHotKey(Keys.Delete);
+            //hook.RegisterHotKey(Keys.Delete);
         }
         void hook_KeyPressed(object sender, KeyPressedEventArgs e)
         {

@@ -36,6 +36,7 @@
             this.passBOX = new ComponentFactory.Krypton.Toolkit.KryptonTextBox();
             this.kryptonGroupBox1 = new ComponentFactory.Krypton.Toolkit.KryptonGroupBox();
             this.kryptonLabel2 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
+            this.savesession = new ComponentFactory.Krypton.Toolkit.KryptonCheckBox();
             this.kryptonLabel1 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
             this.kryptonHeader1 = new ComponentFactory.Krypton.Toolkit.KryptonHeader();
             this.label1 = new System.Windows.Forms.Label();
@@ -106,14 +107,14 @@
             // 
             // userBOX
             // 
-            this.userBOX.Location = new System.Drawing.Point(45, 12);
+            this.userBOX.Location = new System.Drawing.Point(45, 13);
             this.userBOX.Name = "userBOX";
             this.userBOX.Size = new System.Drawing.Size(100, 23);
             this.userBOX.TabIndex = 1;
             // 
             // passBOX
             // 
-            this.passBOX.Location = new System.Drawing.Point(45, 52);
+            this.passBOX.Location = new System.Drawing.Point(45, 42);
             this.passBOX.Name = "passBOX";
             this.passBOX.PasswordChar = '●';
             this.passBOX.Size = new System.Drawing.Size(100, 23);
@@ -131,6 +132,7 @@
             // kryptonGroupBox1.Panel
             // 
             this.kryptonGroupBox1.Panel.Controls.Add(this.kryptonLabel2);
+            this.kryptonGroupBox1.Panel.Controls.Add(this.savesession);
             this.kryptonGroupBox1.Panel.Controls.Add(this.passBOX);
             this.kryptonGroupBox1.Panel.Controls.Add(this.userBOX);
             this.kryptonGroupBox1.Panel.Controls.Add(this.kryptonLabel1);
@@ -140,16 +142,26 @@
             // 
             // kryptonLabel2
             // 
-            this.kryptonLabel2.Location = new System.Drawing.Point(4, 55);
+            this.kryptonLabel2.Location = new System.Drawing.Point(4, 45);
             this.kryptonLabel2.Name = "kryptonLabel2";
             this.kryptonLabel2.PaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.SparkleBlue;
             this.kryptonLabel2.Size = new System.Drawing.Size(34, 20);
             this.kryptonLabel2.TabIndex = 0;
             this.kryptonLabel2.Values.Text = "Pass";
             // 
+            // savesession
+            // 
+            this.savesession.Location = new System.Drawing.Point(45, 73);
+            this.savesession.Name = "savesession";
+            this.savesession.Size = new System.Drawing.Size(95, 16);
+            this.savesession.StateCommon.ShortText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.savesession.TabIndex = 13;
+            this.savesession.Values.Text = "Save Session";
+            this.savesession.CheckedChanged += new System.EventHandler(this.autoSTEAM_CheckedChanged);
+            // 
             // kryptonLabel1
             // 
-            this.kryptonLabel1.Location = new System.Drawing.Point(3, 15);
+            this.kryptonLabel1.Location = new System.Drawing.Point(3, 16);
             this.kryptonLabel1.Name = "kryptonLabel1";
             this.kryptonLabel1.PaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.SparkleBlue;
             this.kryptonLabel1.Size = new System.Drawing.Size(35, 20);
@@ -218,6 +230,7 @@
             this.autoSTEAM.StateCommon.ShortText.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.autoSTEAM.TabIndex = 13;
             this.autoSTEAM.Values.Text = "Skip Steam Login";
+            this.autoSTEAM.Visible = false;
             this.autoSTEAM.CheckedChanged += new System.EventHandler(this.autoSTEAM_CheckedChanged);
             // 
             // bWK
@@ -315,6 +328,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Downgrader Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.cbPATCH)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonGroupBox1.Panel)).EndInit();
@@ -354,6 +368,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.RichTextBox cmdSCREEN;
         private DevComponents.DotNetBar.Controls.ProgressBarX progCMD;
+        private ComponentFactory.Krypton.Toolkit.KryptonCheckBox savesession;
     }
 }
 

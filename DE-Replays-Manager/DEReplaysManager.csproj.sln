@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DEReplaysManager", "DEReplaysManager.csproj", "{D02FDB51-F42A-48B0-A86E-5526F38B3ED9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater\Updater.csproj", "{4C3AB6E0-7441-4837-BA2B-45DFE34E22E8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepotDownloader", "DepotDownloader\DepotDownloader.csproj", "{9DCC8B63-150A-4B1F-93B6-14B864298A27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,30 +71,6 @@ Global
 		{4C3AB6E0-7441-4837-BA2B-45DFE34E22E8}.ReleaseTrialNoLimit|Any CPU.Build.0 = Release|Any CPU
 		{4C3AB6E0-7441-4837-BA2B-45DFE34E22E8}.ReleaseTrialNoLimit|x86.ActiveCfg = Release|Any CPU
 		{4C3AB6E0-7441-4837-BA2B-45DFE34E22E8}.ReleaseTrialNoLimit|x86.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Debug|x86.Build.0 = Debug|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release|x86.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release|x86.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release2005|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release2005|Any CPU.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release2005|x86.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.Release2005|x86.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial|Any CPU.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial|x86.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial|x86.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial2005|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial2005|Any CPU.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial2005|x86.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrial2005|x86.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrialNoLimit|Any CPU.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrialNoLimit|Any CPU.Build.0 = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrialNoLimit|x86.ActiveCfg = Release|Any CPU
-		{9DCC8B63-150A-4B1F-93B6-14B864298A27}.ReleaseTrialNoLimit|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

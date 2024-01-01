@@ -1,6 +1,11 @@
 ﻿using DeReplaysManager;
+using DeReplaysManager.Forms;
+using DeReplaysManager.Libraries;
+using DeReplaysManager.Properties;
 using DevComponents.DotNetBar;
+using DevComponents.DotNetBar.Controls;
 using Microsoft.VisualBasic.FileIO;
+using Microsoft.Win32;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -10,7 +15,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,13 +25,30 @@ namespace De_Roll
 {
     public partial class Form1 : OfficeForm
     {
+        private static Form form;
+        public string UserInput { get; private set; }
+        public string PassInput { get; private set; }
+        public bool SaveSession { get; private set; }
         public string SetPatchVer { get; set; }
-
+        private TextBox outputTextBox;
+        public bool _stopinput = false;
         public Form1()
         {
             InitializeComponent();
+            InitializeComponents();
         }
+        private void InitializeComponents()
+        {
+            outputTextBox = new TextBox
+            {
+                Multiline = true,
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                ScrollBars = ScrollBars.Both
+            };
 
+            Controls.Add(outputTextBox);
+        }
         public int _currentDepots;
         public string depo;
         public string manif;
@@ -55,46 +79,32 @@ namespace De_Roll
         private bool _InterENDED;
         private string _FailedDepot;
         public bool _connected;
-
+        public static void CloseForm()
+        {
+            form?.Close();
+        }
         public async Task<bool> IsConnected()
         {
-
             try
             {
                 WebClient webClient = new WebClient();
-                webClient.OpenReadCompleted += (sender, e) =>
+                webClient.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e)
                 {
                     if (e.Result != null)
                     {
                         _connected = true;
                     }
-
                 };
                 await webClient.OpenReadTaskAsync(new Uri("http://google.com/generate_204", UriKind.Absolute));
-
                 return _connected;
-
             }
             catch (SystemException)
             {
                 return _connected;
             }
-
-            //try
-            //{
-            //    using (var client = new WebClient())
-            //    using (client.OpenReadAsync("http://google.com/generate_204"))
-            //        return true;
-            //}
-            //catch
-            //{
-            //    return false;
-            //}
         }
 
-
-
-        async Task<string> CheckDotNet()
+        private async Task<string> CheckDotNet()
         {
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
@@ -104,7 +114,6 @@ namespace De_Roll
             p.StartInfo.FileName = "CMD.EXE";
             p.StartInfo.Arguments = "/C dotnet && exit";
             p.Start();
-
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
             p.Close();
@@ -114,111 +123,110 @@ namespace De_Roll
 
         private void kryptonButton1_Click(object sender, EventArgs e)
         {
-
-            kryptonButton1.Enabled = false;
-            if (cbPATCH.Text != "Select Patch Version")
-                DepotCommander(cbPATCH.Text);
+            // Check if the registry has the encrypted credentials
+            var key = Registry.CurrentUser.OpenSubKey(@"Software\DERM");
+            if (key != null)
+            {
+                var encryptedUser = key.GetValue("User") as string;
+                var encryptedPass = key.GetValue("Pass") as string;
+                if (!string.IsNullOrEmpty(encryptedUser) && !string.IsNullOrEmpty(encryptedPass))
+                {
+                    // Decrypt the credentials and set them to the input fields
+                    userBOX.Text = DC.Decrypt(encryptedUser);
+                    passBOX.Text = DC.Decrypt(encryptedPass);
+                    savesession.Checked = true;
+                }
+            }
+            ((Control)(object)kryptonButton1).Enabled = false;
+            if (((Control)(object)cbPATCH).Text != "Select Patch Version")
+            {
+                DepotCommander(((Control)(object)cbPATCH).Text);
+            }
             VerCheck();
-
-
         }
+
         private static float _getPROG(string line)
         {
             if (line == null)
-                return 0;
-
-            var pattern = @"[+-]?([0-9]*[.])[0-9]+";
-            var matches = Regex.Matches(line, pattern);
-            float result;
-            if (matches.Count > 0 && matches[0].Groups[0].Value != null)
             {
-                if (float.TryParse(matches[0].Groups[0].Value, out result))
-                {
-                    return float.Parse(matches[0].Groups[0].Value);
-                }
-
+                return 0f;
             }
-            return 0;
+            string pattern = "[+-]?([0-9]*[.])[0-9]+";
+            MatchCollection matchCollection = Regex.Matches(line, pattern);
+            if (matchCollection.Count > 0 && matchCollection[0].Groups[0].Value != null && float.TryParse(matchCollection[0].Groups[0].Value, out var _))
+            {
+                return float.Parse(matchCollection[0].Groups[0].Value);
+            }
+            return 0f;
         }
+
         private void AppendTextInBox(RichTextBox box, string text)
         {
-            if (this.InvokeRequired)
+            if (base.InvokeRequired)
             {
-                this.Invoke((Action<RichTextBox, string>)AppendTextInBox, cmdSCREEN, text);
+                Invoke(new Action<RichTextBox, string>(AppendTextInBox), cmdSCREEN, text);
             }
             else
             {
-                //progCMD.Value = (int)_getPROG(text);
                 box.Text += text;
             }
         }
-        private void AppendTextProgress(DevComponents.DotNetBar.Controls.ProgressBarX pb, string text)
+
+        private void AppendTextProgress(ProgressBarX pb, string text)
         {
-            if (this.InvokeRequired)
+            if (base.InvokeRequired)
             {
-
-                this.Invoke((Action<DevComponents.DotNetBar.Controls.ProgressBarX, string>)AppendTextProgress, pb, text);
-
+                Invoke(new Action<ProgressBarX, string>(AppendTextProgress), pb, text);
             }
-            else
+            else if (_getPROG(text) != 0f)
             {
-                if (_getPROG(text) != 0)
-                {
-                    progCMD.Value = (int)_getPROG(text);
-                    pb.Text = "[" + _currentDepot + @"\" + _currentDepots + " Depots] (" + _getPROG(text).ToString() + "%)";
-                }
-
+                progCMD.Value = (int)_getPROG(text);
+                pb.Text = "[" + _currentDepot + "\\" + _currentDepots + " Depots] (" + _getPROG(text) + "%)";
             }
         }
-
-
 
         private static DialogResult ShowInputDialog(ref string input)
         {
-            System.Drawing.Size size = new System.Drawing.Size(200, 70);
-            Form inputBox = new Form();
-            inputBox.StartPosition = FormStartPosition.CenterScreen;
-            inputBox.TopMost = true;
-            inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            inputBox.ClientSize = size;
-            inputBox.Text = "Steam Guard Code!";
-
-            System.Windows.Forms.TextBox textBox = new TextBox();
-            textBox.Size = new System.Drawing.Size(size.Width - 10, 23);
-            textBox.Location = new System.Drawing.Point(5, 5);
+            Size clientSize = new Size(200, 70);
+            Form form = new Form();
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.TopMost = true;
+            form.TopLevel = true;
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.ClientSize = clientSize;
+            form.Text = "Steam Guard Code!";
+            TextBox textBox = new TextBox();
+            textBox.Size = new Size(clientSize.Width - 10, 23);
+            textBox.Location = new Point(5, 5);
             textBox.Text = input;
-            inputBox.Controls.Add(textBox);
-
-            Button okButton = new Button();
-            okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            okButton.Name = "okButton";
-            okButton.Size = new System.Drawing.Size(75, 23);
-            okButton.Text = "&OK";
-            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 39);
-            inputBox.Controls.Add(okButton);
-
-            Button cancelButton = new Button();
-            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            cancelButton.Name = "cancelButton";
-            cancelButton.Size = new System.Drawing.Size(75, 23);
-            cancelButton.Text = "&Cancel";
-            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 39);
-            inputBox.Controls.Add(cancelButton);
-
-            inputBox.AcceptButton = okButton;
-            inputBox.CancelButton = cancelButton;
-
-
-
-            DialogResult result = inputBox.ShowDialog();
+            form.Controls.Add(textBox);
+            Button button = new Button();
+            button.DialogResult = DialogResult.OK;
+            button.Name = "okButton";
+            button.Size = new Size(75, 23);
+            button.Text = "&OK";
+            button.Location = new Point(clientSize.Width - 80 - 80, 39);
+            form.Controls.Add(button);
+            Button button2 = new Button();
+            button2.DialogResult = DialogResult.Cancel;
+            button2.Name = "cancelButton";
+            button2.Size = new Size(75, 23);
+            button2.Text = "&Cancel";
+            button2.Location = new Point(clientSize.Width - 80, 39);
+            form.Controls.Add(button2);
+            form.AcceptButton = button;
+            form.CancelButton = button2;
+            DialogResult result = form.ShowDialog();
             input = textBox.Text;
             return result;
         }
-        async Task<bool> OUTproc(string argz, Process pr)
-        {
 
+        private AsyncManualResetEvent _inputEvent = new AsyncManualResetEvent();
+        private bool _noinput;
+        public async Task<bool> OUTproc(string argz, Process pr)
+        {
             pr.StartInfo.UseShellExecute = false;
-            pr.StartInfo.FileName = @"cmd.exe";
+            pr.StartInfo.FileName = "cmd.exe";
             pr.StartInfo.Arguments = argz;
             pr.StartInfo.RedirectStandardInput = true;
             pr.StartInfo.RedirectStandardOutput = true;
@@ -226,117 +234,146 @@ namespace De_Roll
             pr.StartInfo.CreateNoWindow = true;
             pr.EnableRaisingEvents = true;
             pr.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            //pr.OutputDataReceived += new DataReceivedEventHandler(InterProcOutputHandler);
-            //pr.Exited += new EventHandler(OnCompleted);
+
             pr.OutputDataReceived += (sender, e) =>
             {
-                //Check if guard bool is true before anything else
-                if (!_guardVALID)
-                {
-                    if (e.Data != null && e.Data.Contains("Guard") && !_isvalidated)
-                    {
-                        string input = "";
-                        ShowInputDialog(ref input);
-                        pr.StandardInput.Write(input);
-                        pr.StandardInput.Flush();
-                        pr.StandardInput.Close();
-                        _guardVALID = true;
-
-                    }
-                }
-                //Check bool before running - filtering out a few string lines - condition
-                //if (!_strCLEAN)
-                //{
                 if (e.Data != null)
                 {
-                    if (e.Data.Contains("4UGuysDedicated") || e.Data.Contains("Using filelist") || e.Data.Contains("licenses for account"))
+                    // logic...
+                    if (e.Data == "")
                     {
-                        AppendTextInBox(cmdSCREEN, "");
-                        return;
+                        _noinput = true;
                     }
-                    if (e.Data.Contains("not available from this account"))
+                    if (e.Data.Contains("Downloading") || e.Data.Contains("Got AppInfo"))
                     {
-                        _FailedDepot += "Depot " + _currentDepot + ", ";
+                        _noinput = false;
+                        //Shutdown Steam guard window
+                        CloseForm();
                     }
-
                 }
-                //}
 
                 AppendTextInBox(cmdSCREEN, e.Data + Environment.NewLine);
                 AppendTextProgress(progCMD, e.Data);
             };
-            pr.Exited += (sender, e) =>
-            {
 
+            pr.Exited += delegate
+            {
                 _curStatus = true;
                 _InterENDED = false;
-
+                _inputEvent.Set(); // Signal the input thread to stop waiting
             };
 
-            bool started = pr.Start();
-            pr.BeginOutputReadLine();
+            pr.Start();
+            pr.BeginOutputReadLine(); // Start reading the standard output
 
+            // Separate thread to handle user input
+            Task.Run(async () => await HandleUserInput(pr));
+
+            // Wait for the input thread to complete
+            await _inputEvent.WaitAsync(); // Wait for the input thread to finish processing the user input
+
+            // Wait for the process to exit
+            await WaitForExitAsync(pr);
 
             return true;
         }
 
-        async Task<bool> cmdDEPOT(string depot, string manifest)
+        private async Task WaitForExitAsync(Process process)
+        {
+            await Task.Run(() =>
+            {
+                process.WaitForExit();
+            });
+        }
+        
+        public async Task HandleUserInput(Process process)
+        {
+            while (!_InterENDED && !_curStatus)
+            {
+                if (!_isvalidated)
+                {
+                    string input = "";
+                    ShowInputDialog(ref input);
+                    process.StandardInput.WriteLine(input);
+                    process.StandardInput.Flush();
+                    _isvalidated = true;
+                    await Task.Delay(100); // Adjust the sleep duration as needed
+                }
+               
+
+            }
+
+            _inputEvent.Set(); // Signal that input handling is complete
+        }
+        private async Task<string> ShowInputDialogAsync(string prompt)
+        {
+            var inputDialogForm = new InputDialogForm();
+
+            if (inputDialogForm.ShowDialog() == DialogResult.OK)
+            {
+                return await Task.FromResult(inputDialogForm.UserInput);
+            }
+            else
+            {
+                return await Task.FromResult(string.Empty);
+            }
+        }
+
+        private async Task<bool> cmdDEPOT(string depot, string manifest)
         {
             try
             {
-
-
-                NameValueCollection sAll;
-                sAll = ConfigurationManager.AppSettings;
-                string _downldCNT = RegCalls.GetREG(@"SOFTWARE\DERM", "Downloads") == null ? "8" : RegCalls.GetREG(@"SOFTWARE\DERM", "Downloads");
-
+                _ = ConfigurationManager.AppSettings;
+                string _downldCNT = ((RegCalls.GetREG("SOFTWARE\\DERM", "Downloads") == null) ? "16" : RegCalls.GetREG("SOFTWARE\\DERM", "Downloads"));
                 if (autoSTEAM.Checked)
-                    /*Editted this line to request -beta. The Compiled binary uses a steam account*/
-                    argz = "/c dotnet \"" + System.AppDomain.CurrentDomain.BaseDirectory + "\\DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir " + "\"" + SaveDirectoryPath() + "\"" + " -beta " + "-filelist " + "\"" + System.AppDomain.CurrentDomain.BaseDirectory + "exclude.txt" + "\" -validate -beta -max-downloads " + _downldCNT + " & exit";
+                {
+                    argz = "/c dotnet \"" + AppDomain.CurrentDomain.BaseDirectory + "DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir \"" + SaveDirectoryPath() + "\" -username " + depoc.systemdir + " -remember-password -password \"" + depoc.MDebuf("B+3oaKZs13CtBUYGRDXwafbGLh4EprTak6qAl8m8Kfl8GTs8McxmVY9yl/dtLy12IrIbL5Jdk1KBQN3Dc/6wOg==", "971X42324212874454D512") + "\" -remember-password  -validate -max-downloads " + _downldCNT + " & exit";
+                }
                 else
-                    argz = "/c dotnet \"" + System.AppDomain.CurrentDomain.BaseDirectory + "\\DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir " + "\"" + SaveDirectoryPath() + "\"" + " -username " + userBOX.Text + " -password " + "\"" + passBOX.Text + "\"" + " -remember-password -filelist " + "\"" + System.AppDomain.CurrentDomain.BaseDirectory + "exclude.txt" + "\" -validate -max-downloads " + _downldCNT + " & exit";
-                //output proccess lines
+                {
+                    argz = "/c dotnet \"" + AppDomain.CurrentDomain.BaseDirectory + "DepotDownloader.dll\" -app 813780 -depot " + depot + " -manifest " + manifest + " -dir \"" + SaveDirectoryPath() + "\" -username " + ((Control)(object)userBOX).Text + " -remember-password -password \"" + ((Control)(object)passBOX).Text + "\" -validate -max-downloads " + _downldCNT + " & exit";
+                }
 
-                Process mypr = new Process();
-                await OUTproc(argz, mypr);
+
+                //await ExecuteCommandAsync(argz);
+                await OUTproc(argz: argz, pr: new Process());
                 return true;
-
-
             }
             catch (SystemException)
             {
                 return false;
             }
-
         }
 
         private static int LinePicker(string ver, string mydir)
         {
-            int i = 0;
-            foreach (string line in File.ReadLines(mydir + "\\depatches.txt"))
+            int num = 0;
+            foreach (string item in File.ReadLines(mydir + "\\depatches.txt"))
             {
-                i++;
-                if (line.Contains(ver))
+                num++;
+                if (item.Contains(ver))
                 {
-                    return i;
+                    return num;
                 }
             }
             return 0;
         }
+
         public async Task<string> DownloadStringAsync(Uri uri, int timeOut = 60000)
         {
             try
             {
                 string output = null;
                 bool cancelledOrError = false;
-                using (var client = new WebClient())
+                using (WebClient client = new WebClient())
                 {
                     client.Headers.Add("user-agent", "DE Replays Manager");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                    ServicePointManager.Expect100Continue = false; ServicePointManager.MaxServicePointIdleTime = 0;
-                    client.Encoding = System.Text.Encoding.UTF8;
+                    ServicePointManager.Expect100Continue = false;
+                    ServicePointManager.MaxServicePointIdleTime = 0;
+                    client.Encoding = Encoding.UTF8;
                     client.Proxy = null;
-                    client.DownloadStringCompleted += (sender, e) =>
+                    client.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e)
                     {
                         if (e.Error != null || e.Cancelled)
                         {
@@ -348,102 +385,93 @@ namespace De_Roll
                         }
                     };
                     client.DownloadStringAsync(uri);
-
-                    var n = DateTime.Now;
-                    while (output == null && !cancelledOrError && DateTime.Now.Subtract(n).TotalMilliseconds < timeOut)
+                    DateTime i = DateTime.Now;
+                    while (output == null && !cancelledOrError && DateTime.Now.Subtract(i).TotalMilliseconds < (double)timeOut)
                     {
-
-                        await Task.Delay(100); // wait for respsonse
+                        await Task.Delay(100);
                     }
-
                 }
-
                 return await Task.FromResult(output);
             }
             catch (SystemException)
             {
-
                 return await Task.FromResult(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "depatches.txt") ? File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "depatches.txt") : "");
             }
         }
+
         private async void DepotCommander(string version)
         {
             try
             {
-
-
                 AllDepots.Clear();
                 AllManif.Clear();
                 int i = 0;
-                string line;
 
-                string Releases = await DownloadStringAsync(new Uri(@"https://github.com/gregstein/DE-Replays-Manager/raw/master/depotpatches.txt"));
-                File.WriteAllText(exeDIR + "\\depatches.txt", Releases);
+                File.WriteAllText(contents: await DownloadStringAsync(new Uri("https://github.com/gregstein/DE-Replays-Manager/raw/master/depotpatches.txt")), path: exeDIR + "\\depatches.txt");
 
-                StreamReader file = new StreamReader(exeDIR + "\\depatches.txt");
-                while ((line = file.ReadLine()) != null)
+                using (StreamReader file = new StreamReader(exeDIR + "\\depatches.txt"))
                 {
-                    i++;
-                    if (i == LinePicker(version, exeDIR) && i != 0)
+                    while (!file.EndOfStream)
                     {
+                        string line = file.ReadLine();
+                        i++;
 
+                        if (i != LinePicker(version, exeDIR) || i == 0)
+                            continue;
 
                         string[] spline = line.Split('>');
                         string[] subline = spline[1].Split('#');
                         _currentDepots = subline.Length;
 
                         int j = 0;
-                        foreach (string id in subline)
+                        string[] array = subline;
+
+                        foreach (string id in array)
                         {
                             j++;
-                            //Depot command
-                            if (j >= 1)
-                            {
-                                string[] fsplit = id.Split('+');
+                            if (j < 1) continue;
 
-                                AllDepots.Add(fsplit[0]);
-                                depo = fsplit[0];
-                                string[] ffsplit = fsplit[1].Split('<');
-
-                                AllManif.Add(ffsplit[0]);
-                                manif = ffsplit[0];
-                            }
-
-
-
+                            string[] fsplit = id.Split('+');
+                            AllDepots.Add(fsplit[0]);
+                            depo = fsplit[0];
+                            string[] ffsplit = fsplit[1].Split('<');
+                            AllManif.Add(ffsplit[0]);
+                            manif = ffsplit[0];
                         }
-                        //MessageBox.Show(AllDepots.Count.ToString() + " Depots To Download.");
+
                         _pass = null;
                         _FailedDepot = null;
                         _currentDepots = AllDepots.Count;
-                        //Depot Counter
+
                         if (AllDepots.Count == 1)
                         {
                             await cmdDEPOT(depo, manif);
                             Tdone = true;
                             VerCheck();
-
                         }
-                        else if (AllDepots.Count > 1)
+                        else
                         {
+                            if (AllDepots.Count <= 1)
+                                continue;
 
                             for (int k = 0; k < AllDepots.Count; k++)
                             {
                                 _curStatus = false;
                                 _strCLEAN = false;
-                                bool acmd = false;
                                 _currentDepot = (k + 1).ToString();
                                 _Stoprog = true;
-                                this.BeginInvoke((Action)(() =>
+
+                                if (cmdSCREEN.IsHandleCreated)
                                 {
-                                    cmdSCREEN.Text = "";
-                                    progCMD.Text = "[" + _currentDepot + @"\" + _currentDepots + " Depots] (" + 0 + "%)";
-                                    progCMD.Value = 0;
+                                    cmdSCREEN.Invoke((Action)delegate
+                                    {
+                                        cmdSCREEN.Text = "";
+                                        progCMD.Text = "[" + _currentDepot + "\\" + _currentDepots + " Depots] (" + 0 + "%)";
+                                        progCMD.Value = 0;
+                                    });
+                                }
 
-                                }));
-
-
-                                acmd = await cmdDEPOT(AllDepots[k], AllManif[k]);
+                                await cmdDEPOT(AllDepots[k], AllManif[k]);
 
                                 while (!_curStatus && !_InterENDED)
                                 {
@@ -453,57 +481,64 @@ namespace De_Roll
 
                             Tdone = true;
                             VerCheck();
-                            cmdSCREEN.BeginInvoke((Action)(() =>
+
+                            if (cmdSCREEN.IsHandleCreated)
                             {
-                                if (_FailedDepot != null)
+                                cmdSCREEN.Invoke((Action)delegate
                                 {
-                                    cmdSCREEN.Text = "Failed To Download These depots: " + _FailedDepot.TrimEnd(new char[] { ' ', ',' }) + Environment.NewLine + "Try upgrading using your steam credentials";
-                                }
-                                else
-                                    cmdSCREEN.Text = "Successfully Downgraded To " + label1.Text + ".";
+                                    if (_FailedDepot != null)
+                                    {
+                                        cmdSCREEN.Text = "Failed To Download These depots: " + _FailedDepot.TrimEnd(' ', ',') + Environment.NewLine + "Try upgrading using your steam credentials";
+                                    }
+                                    else
+                                    {
+                                        cmdSCREEN.Text = "Successfully Downgraded To " + label1.Text + ".";
+                                    }
+                                });
+                            }
 
-
-
-                            }));
-                            kryptonButton1.BeginInvoke((Action)(() =>
+                            if (kryptonButton1.IsHandleCreated)
                             {
-                                kryptonButton1.Enabled = true;
-
-                            }));
-
+                                kryptonButton1.Invoke((Action)delegate
+                                {
+                                    kryptonButton1.Enabled = true;
+                                });
+                            }
                         }
-                        //TESTING
                     }
-                    //break;
-                    //END LINES
                 }
-                file.Close();
-
             }
-            catch (System.IndexOutOfRangeException)
+            catch (IndexOutOfRangeException)
             {
-                MessageBox.Show("Filed to retrieve Patch notes.", "Error!");
+                MessageBox.Show("Failed to retrieve Patch notes.", "Error!");
             }
         }
 
+
+
         private void VerCheck()
         {
-            //Re-check game version
-            var versionInfo = FileVersionInfo.GetVersionInfo(SaveDirectoryPath() + @"\AoE2DE_s.exe");
-            string verzion = versionInfo.FileVersion;
-            string[] sver = verzion.Split('.');
-            label1.Text = "Current Version: " + sver[2];
+            try
+            {
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(SaveDirectoryPath() + "\\AoE2DE_s.exe");
+                string fileVersion = versionInfo.FileVersion;
+                string[] array = fileVersion.Split('.');
+                label1.Text = "Current Version: " + array[2];
+            }
+            catch (SystemException)
+            {
+
+            }
+            
         }
 
         private void Copier(string depot)
         {
             try
             {
-                //Source from where we copy the file
-                string sourceFolderPath = System.AppDomain.CurrentDomain.BaseDirectory + @"tmp";
-                // Destination for copied files.
-                string destinationFolderPath = @"C:\test";
-                FileSystem.CopyDirectory(sourceFolderPath, destinationFolderPath, UIOption.AllDialogs);
+                string sourceDirectoryName = AppDomain.CurrentDomain.BaseDirectory + "tmp";
+                string destinationDirectoryName = "C:\\test";
+                FileSystem.CopyDirectory(sourceDirectoryName, destinationDirectoryName, UIOption.AllDialogs);
             }
             catch (Exception ex)
             {
@@ -513,174 +548,148 @@ namespace De_Roll
 
         public string SaveDirectoryPath()
         {
-            if (this.saveDirectoryPath == "")
+            if (!(saveDirectoryPath == "") || SteamApps.GetAppInstallDir((AppId_t)813780u, out saveDirectoryPath, 500u) == 0)
             {
-                uint size = SteamApps.GetAppInstallDir((AppId_t)813780, out this.saveDirectoryPath, 500u);
-
-                if (size <= 0)
-                {
-
-                }
-                else
-                {
-
-                }
             }
-
-            return this.saveDirectoryPath;
+            return saveDirectoryPath;
         }
-        async Task<bool> isVERIFED()
+
+        private async Task<bool> isVERIFED()
         {
-            bool _passed = false; ;
-            //this.Invoke((Action)(async () =>
-            //{
-
-            if (RegCalls.GetREG(@"SOFTWARE\DERM", "GamePath") != null)
+            try
             {
-                timer1.Stop();
-                if (Directory.Exists(RegCalls.GetREG(@"SOFTWARE\DERM", "GamePath")))
+                bool _passed = false;
+                if (RegCalls.GetREG("SOFTWARE\\DERM", "GamePath") != null)
                 {
-                    saveDirectoryPath = RegCalls.GetREG(@"SOFTWARE\DERM", "GamePath");
-                    steamLBL.ForeColor = Color.ForestGreen;
-                    steamLBL.Text = "Steam Already Verified!";
-                    steamSTATUS.Image = DeReplaysManager.Properties.Resources.dotgreen;
-                    cbPATCH.Enabled = true;
-                    kryptonButton1.Enabled = true;
-
-
-                    var versionInfo = FileVersionInfo.GetVersionInfo(saveDirectoryPath + @"\AoE2DE_s.exe");
-                    string version = versionInfo.FileVersion;
-                    string[] sver = version.Split('.');
-                    label1.Text = "Current Version: " + sver[2];
                     timer1.Stop();
-                    _passed = true;
-
+                    if (Directory.Exists(RegCalls.GetREG("SOFTWARE\\DERM", "GamePath")))
+                    {
+                        saveDirectoryPath = RegCalls.GetREG("SOFTWARE\\DERM", "GamePath");
+                        steamLBL.ForeColor = Color.ForestGreen;
+                        steamLBL.Text = "Steam Already Verified!";
+                        steamSTATUS.Image = Resources.dotgreen;
+                        ((Control)(object)cbPATCH).Enabled = true;
+                        ((Control)(object)kryptonButton1).Enabled = true;
+                        FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(saveDirectoryPath + "\\AoE2DE_s.exe");
+                        string version = versionInfo.FileVersion;
+                        string[] sver = version.Split('.');
+                        label1.Text = "Current Version: " + sver[2];
+                        timer1.Stop();
+                        _passed = true;
+                    }
                 }
-
+                return _passed;
             }
-
-            //}));
-
-            return _passed;
+            catch (SystemException)
+            {
+                return false;
+            }
+            
         }
+
         private async void timer1_Tick(object sender, EventArgs e)
         {
             try
             {
-                //var tsk = await isVERIFED();
-                //bool verify = tsk;
-
                 if (!SteamAPI.Init())
                 {
                     if (SteamAPI.IsSteamRunning())
                     {
                         steamLBL.ForeColor = Color.DarkBlue;
                         steamLBL.Text = "Steam Running..";
-                        steamSTATUS.Image = DeReplaysManager.Properties.Resources.dotred;
+                        steamSTATUS.Image = Resources.dotred;
+                        return;
                     }
-                    else
-                    {
-                        steamLBL.ForeColor = Color.Gold;
-                        await Task.Delay(200);
-                        steamLBL.Text = "Steam OFF";
-                        await Task.Delay(100);
-                        steamLBL.ForeColor = Color.Maroon;
-                        steamSTATUS.Image = DeReplaysManager.Properties.Resources.dotred;
-                    }
-
-                    //SteamUtils.GetAppID();
-
-                }
-                else
-                {
-
-                    steamLBL.ForeColor = Color.ForestGreen;
-                    steamLBL.Text = "Steam ON";
-                    steamSTATUS.Image = DeReplaysManager.Properties.Resources.dotgreen;
-                    cbPATCH.Enabled = true;
-                    kryptonButton1.Enabled = true;
+                    steamLBL.ForeColor = Color.Gold;
                     await Task.Delay(200);
-
-                    bool IsDE = SteamApps.BIsAppInstalled(new AppId_t(813780));
-                    if (!IsDE)
-                    {
-                        MessageBox.Show("Please Buy or Install Age of Empires II: Definitive Edition before you proceed!", "Game Missing");
-                        cbPATCH.Enabled = false;
-                        timer1.Stop();
-                    }
-
-                    var versionInfo = FileVersionInfo.GetVersionInfo(SaveDirectoryPath() + @"\AoE2DE_s.exe");
-                    string version = versionInfo.FileVersion;
-                    string[] sver = version.Split('.');
-                    label1.Text = "Current Version: " + sver[2];
-                    RegCalls.AddREG(SaveDirectoryPath(), @"SOFTWARE\DERM", "GamePath");
+                    steamLBL.Text = "Steam OFF";
+                    await Task.Delay(100);
+                    steamLBL.ForeColor = Color.Maroon;
+                    steamSTATUS.Image = Resources.dotred;
+                    return;
+                }
+                steamLBL.ForeColor = Color.ForestGreen;
+                steamLBL.Text = "Steam ON";
+                steamSTATUS.Image = Resources.dotgreen;
+                ((Control)(object)cbPATCH).Enabled = true;
+                ((Control)(object)kryptonButton1).Enabled = true;
+                await Task.Delay(200);
+                if (!SteamApps.BIsAppInstalled(new AppId_t(813780u)))
+                {
+                    MessageBox.Show("Please Buy or Install Age of Empires II: Definitive Edition before you proceed!", "Game Missing");
+                    ((Control)(object)cbPATCH).Enabled = false;
                     timer1.Stop();
                 }
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(SaveDirectoryPath() + "\\AoE2DE_s.exe");
+                string version = versionInfo.FileVersion;
+                string[] sver = version.Split('.');
+                label1.Text = "Current Version: " + sver[2];
+                RegCalls.AddREG(SaveDirectoryPath(), "SOFTWARE\\DERM", "GamePath");
+                timer1.Stop();
             }
             catch (SystemException)
             {
                 steamLBL.ForeColor = Color.Black;
                 steamLBL.Text = "Steam OFF";
-                steamSTATUS.Image = DeReplaysManager.Properties.Resources.dotred;
-
+                steamSTATUS.Image = Resources.dotred;
             }
-
         }
-
-
 
         private void settingbtn_Click(object sender, EventArgs e)
         {
-            DTSettings dt = new DTSettings();
-            dt.Show();
+            DTSettings dTSettings = new DTSettings();
+            dTSettings.Show();
         }
-
-
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-
-            if ((progCMD.Value > 0 && progCMD.Value < 100) || kryptonButton1.Enabled == false)
+            if ((progCMD.Value <= 0 || progCMD.Value >= 100) && ((Control)(object)kryptonButton1).Enabled)
             {
-                DialogResult dialogResult = MessageBox.Show(this, "Close window now?", "Close?", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    e.Cancel = false;
-                    this.Dispose();
-                    foreach (var process in Process.GetProcessesByName("dotnet"))
-                        process.Kill();
-                    this.Close();
-
-                }
-                else if (dialogResult == DialogResult.No) e.Cancel = true;
-
+                return;
             }
-
+            switch (MessageBox.Show(this, "Close window now?", "Close?", MessageBoxButtons.YesNo))
+            {
+                case DialogResult.Yes:
+                    {
+                        e.Cancel = false;
+                        Dispose();
+                        Process[] processesByName = Process.GetProcessesByName("dotnet");
+                        foreach (Process process in processesByName)
+                        {
+                            process.Kill();
+                        }
+                        Close();
+                        break;
+                    }
+                case DialogResult.No:
+                    e.Cancel = true;
+                    break;
+            }
         }
 
         private void autoSTEAM_CheckedChanged(object sender, EventArgs e)
         {
             if (autoSTEAM.Checked)
             {
-                userBOX.Enabled = false;
-                passBOX.Enabled = false;
-                cbPATCH.Enabled = true;
+                ((Control)(object)userBOX).Enabled = false;
+                ((Control)(object)passBOX).Enabled = false;
+                ((Control)(object)cbPATCH).Enabled = true;
             }
             else
             {
-                userBOX.Enabled = true;
-                passBOX.Enabled = true;
+                ((Control)(object)userBOX).Enabled = true;
+                ((Control)(object)passBOX).Enabled = true;
             }
         }
 
         private async void cmdSCREEN_TextChanged(object sender, EventArgs e)
         {
-            // set the current caret position to the end
             cmdSCREEN.SelectionStart = cmdSCREEN.Text.Length;
-            // scroll it automatically
             cmdSCREEN.ScrollToCaret();
             if (cmdSCREEN.Lines.Length > 60)
+            {
                 cmdSCREEN.Text = "";
+            }
             await Task.Delay(50);
         }
 
@@ -739,7 +748,57 @@ namespace De_Roll
             }
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // Check if the registry has the encrypted credentials
+            var key = Registry.CurrentUser.OpenSubKey(@"Software\DERM");
+            if (key != null)
+            {
+                var encryptedUser = key.GetValue("User") as string;
+                var encryptedPass = key.GetValue("Pass") as string;
+                if (!string.IsNullOrEmpty(encryptedUser) && !string.IsNullOrEmpty(encryptedPass))
+                {
+                    // Decrypt the credentials and set them to the input fields
+                    userBOX.Text = DC.Decrypt(encryptedUser);
+                    passBOX.Text = DC.Decrypt(encryptedPass);
+                    savesession.Checked = true;
+                }
+            }
+        }
+    }
+    public class AsyncManualResetEvent
+    {
+        private volatile TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
 
+        public Task WaitAsync() => tcs.Task;
+
+        public void Set() => tcs.TrySetResult(true);
+
+        public void Reset()
+        {
+            while (true)
+            {
+                var tcs = this.tcs;
+                if (!tcs.Task.IsCompleted ||
+                    Interlocked.CompareExchange(ref this.tcs, new TaskCompletionSource<bool>(), tcs) == tcs)
+                    return;
+            }
+        }
     }
 }
+public static class ProcessExtensions
+{
+    public static Task<bool> WaitForExitAsync(this Process process, int milliseconds = -1)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        process.EnableRaisingEvents = true;
+        process.Exited += (s, e) => tcs.TrySetResult(true);
+        if (milliseconds >= 0)
+        {
+            _ = Task.Delay(milliseconds).ContinueWith(_ => tcs.TrySetResult(false));
+        }
+        return tcs.Task;
+    }
+}
+
 
