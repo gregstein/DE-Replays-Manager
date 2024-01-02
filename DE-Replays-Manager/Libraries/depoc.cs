@@ -7,7 +7,7 @@ public static class depoc
 {
     public static string systemdir = "4UGuysDedicated";
 
-    public static string tkDB = "ALB5pTyp3NsAAAAAAAAAAe_RlDlXjkWehC9zrKPjFHVyM2MWtIK7S-ihNI-MfSF8";
+    public static string tkDB = "ihNI";
 
     public static byte[] MDebuf(byte[] cipherData, byte[] Key, byte[] IV)
     {
